@@ -1,0 +1,2033 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Firli & Allya — Undangan Pernikahan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ivory: #f6f1e7;
+        --ivory-dim: rgba(246, 241, 231, 0.78);
+        --wine: #a6332c;
+        --wine-light: #c24c3e;
+        --gold: #c9a968;
+        --overlay-top: rgba(10, 10, 8, 0.15);
+        --overlay-bottom: rgba(8, 8, 6, 0.86);
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        overflow-x: hidden;
+        max-width: 100vw;
+        overscroll-behavior: none;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body.pre-open {
+        overflow: hidden;
+        height: 100svh;
+      }
+      body.pre-open .invite-frame {
+        overflow-y: hidden !important;
+      }
+
+      /* Sembunyikan scrollbar (kanan/bawah) di semua browser, scroll tetap berfungsi normal */
+      html,
+      body,
+      .invite-frame {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Edge lama */
+      }
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar,
+      .invite-frame::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge baru */
+        width: 0;
+        height: 0;
+      }
+      .font-script {
+        font-family: "Alex Brush", cursive;
+      }
+      .font-serif {
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      /* ===== JAMINAN: aturan krusial ini TIDAK bergantung Tailwind CDN, ====
+     supaya tetap jalan walau cdn.tailwindcss.com gagal load (offline/lambat) ===== */
+      .hidden {
+        display: none !important;
+      }
+      #next-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+      }
+      #floating-fab {
+        position: sticky;
+        bottom: 0;
+        height: 0;
+        z-index: 30;
+      }
+      #floating-fab > div {
+        position: absolute;
+        right: 20px;
+        bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 30;
+      }
+
+      /* ===== Frame: di layar lebar, undangan tampil sebagai kartu ala-HP di tengah ===== */
+      .invite-stage {
+        min-height: 100svh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+      .invite-frame {
+        position: relative;
+        width: 100%;
+        min-height: 100svh;
+        overflow-x: hidden;
+      }
+      @media (min-width: 900px) {
+        .invite-stage {
+          padding: 40px 0;
+          background: #0a0a08;
+        }
+        .invite-frame {
+          width: min(430px, 92vw);
+          max-height: 92svh;
+          overflow-y: auto;
+          overflow-x: hidden;
+          border-radius: 28px;
+          box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.6),
+            0 0 0 10px #111;
+        }
+      }
+
+      /* ===== Cover ===== */
+      #cover {
+        position: relative;
+        height: 100svh;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      /* Foto carousel */
+      .bg-slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transform: scale(1.06);
+        transition:
+          opacity 1.8s ease-in-out,
+          transform 8s ease-out;
+      }
+      .bg-slide.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .overlay-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(10, 10, 8, 0.5) 0%,
+          rgba(10, 10, 8, 0.35) 35%,
+          rgba(10, 10, 8, 0.55) 60%,
+          var(--overlay-bottom) 100%
+        );
+      }
+
+      /* Nama mempelai — ayun dulu (settle), lalu melandai jadi goyang pelan menetap */
+      @keyframes sway-settle {
+        0% {
+          transform: rotate(0deg);
+        }
+        12% {
+          transform: rotate(-7deg);
+        }
+        28% {
+          transform: rotate(6deg);
+        }
+        44% {
+          transform: rotate(-4deg);
+        }
+        60% {
+          transform: rotate(2.5deg);
+        }
+        76% {
+          transform: rotate(-1.5deg);
+        }
+        90% {
+          transform: rotate(0.8deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+      @keyframes sway-idle {
+        0%,
+        100% {
+          transform: rotate(-1.4deg) translateY(0);
+        }
+        50% {
+          transform: rotate(1.4deg) translateY(-2px);
+        }
+      }
+      .name-script {
+        animation-name: sway-settle, sway-idle;
+        animation-duration: 2s, 5s;
+        animation-timing-function: ease-out, ease-in-out;
+        animation-delay: 0s, 2s;
+        animation-iteration-count: 1, infinite;
+        animation-fill-mode: both, none;
+        text-shadow:
+          0 2px 6px rgba(0, 0, 0, 0.55),
+          0 4px 24px rgba(0, 0, 0, 0.5);
+      }
+      .name-script.delay {
+        animation-delay: 0.6s, 2.6s;
+      }
+
+      /* Kepada Yth — muncul dari bawah ke atas */
+      @keyframes reveal-up {
+        from {
+          opacity: 0;
+          transform: translateY(28px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .guest-block {
+        opacity: 0;
+        animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.1s forwards;
+      }
+
+      /* Tombol buka undangan: animasi sama persis dengan "Kepada Yth." — muncul dari bawah sekali saja */
+      .cta-btn {
+        opacity: 0;
+        animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.5s forwards;
+      }
+
+      /* Transisi saat cover dibuka */
+      #cover.opening {
+        transition:
+          opacity 1.1s ease,
+          transform 1.1s ease;
+      }
+      #cover.opening.hide {
+        opacity: 0;
+        transform: scale(1.03);
+        pointer-events: none;
+      }
+
+      /* ===== Section 2: nama + garis-diamond, muncul dari bawah ===== */
+      .section2-reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .section2-reveal.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes spin-slow {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #music-btn.playing svg {
+        animation: spin-slow 4s linear infinite;
+      }
+
+      /* ===== Section 3: animasi muncul saat discroll ===== */
+      .dm-letter {
+        opacity: 0;
+        transition:
+          opacity 0.9s ease,
+          transform 0.9s ease;
+      }
+      .dm-from-left {
+        transform: translateX(-60px);
+      }
+      .dm-from-right {
+        transform: translateX(60px);
+      }
+      .dm-letter.in-view {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .ayat-reveal {
+        opacity: 0;
+        transform: translateY(-30px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .ayat-reveal.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .pop-reveal {
+        opacity: 0;
+        transition: opacity 0.15s linear;
+      }
+      .pop-reveal.in-view {
+        opacity: 1;
+      }
+
+      .reveal-up-scroll {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .reveal-up-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .zoom-out-reveal {
+        opacity: 0;
+        transform: scale(1.3);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .zoom-out-reveal.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Judul: dari kecil menjadi lebar/normal */
+      .title-expand {
+        opacity: 0;
+        transform: scale(0.4);
+        transition:
+          opacity 1s ease,
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .title-expand.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Kebalikan zoom-out: dari kecil menjadi besar/normal */
+      .zoom-in-reveal {
+        opacity: 0;
+        transform: scale(0.3);
+        transition:
+          opacity 1s ease,
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .zoom-in-reveal.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Galeri: muncul satu-satu, cepat */
+      .gallery-reveal {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+      }
+      .gallery-reveal.in-view {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    </style>
+  </head>
+  <body class="pre-open">
+    <div class="invite-stage">
+      <div class="invite-frame">
+        <section id="cover">
+          <!-- ===== FOTO CAROUSEL (ganti background-image di sini) ===== -->
+          <div
+            class="bg-slide active"
+            style="background-image: url(&quot;assets/foto 1.jpeg&quot;)"
+          ></div>
+          <div
+            class="bg-slide"
+            style="
+              background-image: url(&quot;assets/foto 2.jpeg&quot;);
+            "
+          ></div>
+          <div
+            class="bg-slide"
+            style="
+              background-image: url(&quot;assets/foto 3.jpeg&quot;);
+            "
+          ></div>
+
+          <div class="overlay-gradient"></div>
+
+          <!-- ===== KONTEN ===== -->
+          <div
+            class="relative z-10 h-full flex flex-col items-center justify-between text-center px-6 py-10"
+          >
+            <div class="mt-4"></div>
+
+            <div class="flex flex-col w-full px-4" style="margin-top: -8vh">
+              <h1
+                class="name-script font-script text-[var(--ivory)] leading-none self-start text-left"
+                style="font-size: clamp(3.4rem, 15vw, 5rem)"
+              >
+                Firli
+              </h1>
+              <span
+                class="font-script text-[var(--gold)] self-center"
+                style="font-size: clamp(2rem, 8vw, 2.6rem); margin: -0.6rem 0"
+                >&amp;</span
+              >
+              <h1
+                class="name-script delay font-script text-[var(--ivory)] leading-none self-end text-right"
+                style="font-size: clamp(3.4rem, 15vw, 5rem)"
+              >
+                Allya
+              </h1>
+            </div>
+
+            <div class="guest-block font-serif text-[var(--ivory)] mb-6">
+              <p class="text-sm text-[var(--ivory-dim)]">Kepada Yth.</p>
+              <p id="guest-name" class="text-lg italic mt-1">
+                Bapak/Ibu/Saudara/i
+              </p>
+
+              <button
+                id="open-btn"
+                class="cta-btn mt-6 flex items-center gap-2 mx-auto bg-[var(--wine)] hover:bg-[var(--wine-light)] text-[var(--ivory)] font-serif italic text-base px-6 py-3 rounded-r-full rounded-tl-full shadow-lg transition-colors"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--ivory)"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 20c8-1 14-7 15-16-9 1-15 7-16 16z" />
+                  <path d="M6 18c3-4 7-8 12-11" />
+                </svg>
+                <span>Buka Undangan</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- placeholder bagian berikutnya, akan dibangun di tahap selanjutnya -->
+        <section
+          id="next-section"
+          class="hidden absolute top-0 left-0 w-full overflow-hidden"
+          style="height: 100svh"
+        >
+          <div
+            class="absolute inset-0"
+            style="
+              background-image: url(&quot;assets/foto-1.jpg&quot;);
+              background-size: cover;
+              background-position: center;
+            "
+          ></div>
+          <div
+            class="absolute inset-0"
+            style="
+              background: linear-gradient(
+                180deg,
+                rgba(10, 10, 8, 0.35) 0%,
+                rgba(10, 10, 8, 0.2) 40%,
+                rgba(10, 10, 8, 0.8) 100%
+              );
+            "
+          ></div>
+
+          <div
+            class="relative z-10 h-full flex flex-col items-center justify-end text-center px-6 pb-40"
+          >
+            <div id="section2-text" class="section2-reveal">
+              <h2
+                class="font-serif font-semibold text-[var(--ivory)]"
+                style="font-size: clamp(2rem, 9vw, 2.8rem)"
+              >
+                Firli &amp; Allya
+              </h2>
+              <div class="flex items-center justify-center gap-3 mt-3">
+                <span
+                  class="h-px w-10"
+                  style="background: var(--ivory-dim)"
+                ></span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="var(--gold)"
+                >
+                  <path d="M12 2 L20 12 L12 22 L4 12 Z" />
+                </svg>
+                <span
+                  class="h-px w-10"
+                  style="background: var(--ivory-dim)"
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ganti src di bawah dengan file musik kamu -->
+          <audio id="bg-audio" src="assets/music.mp3" loop></audio>
+        </section>
+
+        <!-- Tombol QR & musik: mengambang menempel kanan-bawah di SEMUA section, muncul setelah undangan dibuka -->
+        <div
+          id="floating-fab"
+          class="hidden"
+          style="position: sticky; bottom: 0; height: 0; z-index: 30"
+        >
+          <div
+            class="absolute right-5 flex flex-col gap-3"
+            style="bottom: 24px"
+          >
+            <button
+              id="qr-btn"
+              class="w-11 h-11 rounded-full flex items-center justify-center shadow-lg"
+              style="background: rgba(246, 241, 231, 0.92)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#1a1a1a"
+                stroke-width="1.6"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <rect x="14" y="14" width="3" height="3" />
+                <rect x="18" y="18" width="3" height="3" />
+              </svg>
+            </button>
+            <button
+              id="music-btn"
+              class="w-11 h-11 rounded-full flex items-center justify-center shadow-lg"
+              style="background: rgba(246, 241, 231, 0.92)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#1a1a1a"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <section
+          id="section3"
+          class="relative bg-[var(--ivory)] px-6 py-20 text-center"
+        >
+          <!-- D | M -->
+          <div class="flex items-center justify-center gap-5 mb-14">
+            <span
+              id="dm-d"
+              class="dm-letter dm-from-left font-serif font-bold"
+              style="font-size: 4rem; color: var(--wine)"
+              >F</span
+            >
+            <span class="h-16 w-px" style="background: var(--wine)"></span>
+            <span
+              id="dm-m"
+              class="dm-letter dm-from-right font-serif font-bold"
+              style="font-size: 4rem; color: var(--wine)"
+              >A</span
+            >
+          </div>
+
+          <!-- QS. Ar-Rum -->
+          <div id="ayat-block" class="ayat-reveal max-w-md mx-auto">
+            <p class="font-serif italic text-[#666] mb-4">QS. Ar-Rum Ayat 21</p>
+            <p
+              dir="rtl"
+              style="color: var(--wine); font-size: 1.35rem; line-height: 2.1"
+            >
+              وَمِنْ أٰيٰتِهٖ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا
+              لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً
+              وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ
+            </p>
+            <p class="font-serif italic text-[#777] mt-4 leading-relaxed">
+              Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan
+              pasangan-pasangan untukmu dari jenismu sendiri, agar kamu
+              cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di
+              antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu
+              benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang
+              berpikir.
+            </p>
+          </div>
+
+          <!-- garis + daun -->
+          <div
+            id="divider-leaf"
+            class="pop-reveal flex items-center justify-center gap-3 my-10"
+          >
+            <span class="h-px w-16" style="background: #333"></span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#2F3B2F">
+              <path d="M4 20c8-1 14-7 15-16-9 1-15 7-16 16z" />
+            </svg>
+            <span class="h-px w-16" style="background: #333"></span>
+          </div>
+
+          <!-- Bride & Groom -->
+          <div id="bride-groom-heading" class="pop-reveal">
+            <h2
+              class="font-serif font-bold"
+              style="font-size: 2.6rem; color: var(--wine)"
+            >
+              Bride
+            </h2>
+            <p class="font-script" style="font-size: 2rem; color: #2f3b2f">
+              &amp; Groom
+            </p>
+          </div>
+
+          <!-- Salam pembuka -->
+          <div
+            id="greeting-block"
+            class="reveal-up-scroll max-w-md mx-auto mt-8 font-serif text-[#555] leading-relaxed"
+          >
+            <p>Assalamu'alaikum Warahmatullaahi Wabarakaatuh</p>
+            <p class="mt-4">
+              Maha Suci Allah yang telah menciptakan makhluk-Nya
+              berpasang-pasangan. Ya Allah semoga ridho-Mu tercurah mengiringi
+              pernikahan kami
+            </p>
+          </div>
+
+          <!-- Foto mempelai pria -->
+          <div
+            id="groom-photo"
+            class="zoom-out-reveal mx-auto mt-10"
+            style="
+              width: 260px;
+              height: 340px;
+              border-radius: 50%;
+              border: 1.5px solid var(--wine);
+              padding: 8px;
+              box-sizing: border-box;
+            "
+          >
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 1.5px solid var(--wine);
+                overflow: hidden;
+                box-sizing: border-box;
+              "
+            >
+              <img
+                src="assets/foto-groom.jpg"
+                class="w-full h-full object-cover"
+                alt="Groom"
+              />
+            </div>
+          </div>
+
+          <!-- Nama & info mempelai pria: animasi dari atas ke bawah -->
+          <div id="groom-info" class="ayat-reveal mt-6">
+            <h3
+              class="font-serif font-bold"
+              style="font-size: 1.7rem; color: var(--wine)"
+            >
+              Muhamad Firliansyah 
+            </h3>
+            <p class="font-serif text-[#666] mt-2 leading-relaxed">
+              Putra Pertama dari<br />Bapak Kusna Miharja dan Ibu Dede Kartini
+            </p>
+            <a
+              href="#"
+              class="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-full font-serif text-sm"
+              style="border: 1px solid #999; color: #555"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#555"
+                stroke-width="1.6"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" />
+              </svg>
+              Galipat_Story
+            </a>
+          </div>
+
+          <!-- garis & : statis, tanpa animasi -->
+          <div class="flex items-center justify-center gap-3 my-10">
+            <span class="h-px w-16" style="background: #333"></span>
+            <span class="font-script" style="font-size: 2.2rem; color: #2f3b2f"
+              >&amp;</span
+            >
+            <span class="h-px w-16" style="background: #333"></span>
+          </div>
+
+          <!-- Foto + nama + info mempelai wanita: semua animasi zoom-out bareng -->
+          <div id="bride-block" class="zoom-out-reveal">
+            <div
+              class="mx-auto"
+              style="
+                width: 260px;
+                height: 340px;
+                border-radius: 50%;
+                border: 1.5px solid var(--wine);
+                padding: 8px;
+                box-sizing: border-box;
+              "
+            >
+              <div
+                style="
+                  width: 100%;
+                  height: 100%;
+                  border-radius: 50%;
+                  border: 1.5px solid var(--wine);
+                  overflow: hidden;
+                  box-sizing: border-box;
+                "
+              >
+                <img
+                  src="assets/foto-bride.jpg"
+                  class="w-full h-full object-cover"
+                  alt="Bride"
+                />
+              </div>
+            </div>
+            <h3
+              class="font-serif font-bold mt-6"
+              style="font-size: 1.7rem; color: var(--wine)"
+            >
+              Allya Khairinissa
+            </h3>
+            <p class="font-serif text-[#666] mt-2 leading-relaxed">
+              Putri Pertama dari<br />Bapak Wilia Widinarsyah dan Ibu Pilawati
+            </p>
+            <a
+              href="#"
+              class="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-full font-serif text-sm"
+              style="border: 1px solid #999; color: #555"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#555"
+                stroke-width="1.6"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" />
+              </svg>
+              Galipat_Story
+            </a>
+          </div>
+        </section>
+
+        <section
+          id="section-savedate"
+          class="relative overflow-hidden px-6 py-24 text-center"
+          style="min-height: 100svh"
+        >
+          <div
+            class="absolute inset-0"
+            style="
+              background-image: url(&quot;assets/foto-1.jpg&quot;);
+              background-size: cover;
+              background-position: center;
+            "
+          ></div>
+          <div
+            class="absolute inset-0"
+            style="
+              background: linear-gradient(
+                180deg,
+                rgba(10, 10, 8, 0.55) 0%,
+                rgba(10, 10, 8, 0.68) 100%
+              );
+            "
+          ></div>
+
+          <div class="relative z-10">
+            <!-- "Save The Date": muncul (fade) -->
+            <h2
+              id="std-title"
+              class="pop-reveal font-serif font-bold"
+              style="font-size: 2.6rem; color: var(--wine)"
+            >
+              Save The Date
+            </h2>
+
+            <!-- Garis + daun: dari bawah ke atas -->
+            <div
+              id="std-divider"
+              class="reveal-up-scroll flex items-center justify-center gap-3 my-8"
+            >
+              <span class="h-px w-16" style="background: var(--ivory)"></span>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="var(--wine)"
+              >
+                <path d="M4 20c8-1 14-7 15-16-9 1-15 7-16 16z" />
+              </svg>
+              <span class="h-px w-16" style="background: var(--ivory)"></span>
+            </div>
+
+            <!-- Teks: dari atas ke bawah -->
+            <p
+              id="std-text"
+              class="ayat-reveal font-serif text-[var(--ivory)] max-w-md mx-auto leading-relaxed"
+            >
+              Dengan segala kerendahan hati kami berharap kehadiran
+              Bapak/Ibu/Saudara/i dalam acara pernikahan kami yang akan
+              diselenggarakan pada :
+            </p>
+
+            <!-- Countdown: TIDAK ada animasi -->
+            <div class="flex items-center justify-center gap-3 mt-10">
+              <div
+                class="rounded-xl px-4 py-3"
+                style="background: var(--wine); min-width: 70px"
+              >
+                <div
+                  id="cd-days"
+                  class="font-serif font-bold text-[var(--ivory)]"
+                  style="font-size: 1.6rem"
+                >
+                  00
+                </div>
+                <div class="font-serif text-[var(--ivory)] text-sm">Hari</div>
+              </div>
+              <div
+                class="rounded-xl px-4 py-3"
+                style="background: var(--wine); min-width: 70px"
+              >
+                <div
+                  id="cd-hours"
+                  class="font-serif font-bold text-[var(--ivory)]"
+                  style="font-size: 1.6rem"
+                >
+                  00
+                </div>
+                <div class="font-serif text-[var(--ivory)] text-sm">Jam</div>
+              </div>
+              <div
+                class="rounded-xl px-4 py-3"
+                style="background: var(--wine); min-width: 70px"
+              >
+                <div
+                  id="cd-minutes"
+                  class="font-serif font-bold text-[var(--ivory)]"
+                  style="font-size: 1.6rem"
+                >
+                  00
+                </div>
+                <div class="font-serif text-[var(--ivory)] text-sm">Menit</div>
+              </div>
+              <div
+                class="rounded-xl px-4 py-3"
+                style="background: var(--wine); min-width: 70px"
+              >
+                <div
+                  id="cd-seconds"
+                  class="font-serif font-bold text-[var(--ivory)]"
+                  style="font-size: 1.6rem"
+                >
+                  00
+                </div>
+                <div class="font-serif text-[var(--ivory)] text-sm">Detik</div>
+              </div>
+            </div>
+
+            <!-- Tombol: dari bawah ke atas -->
+            <button
+              id="save-calendar-btn"
+              class="reveal-up-scroll mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full font-serif"
+              style="
+                background: var(--wine);
+                color: var(--ivory);
+                border: none;
+                cursor: pointer;
+              "
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--ivory)"
+                stroke-width="1.6"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+              Simpan di Kalender
+            </button>
+          </div>
+        </section>
+
+        <section
+          id="section-acara"
+          class="relative bg-[var(--ivory)] px-6 py-20 text-center"
+        >
+          <!-- Akad Nikah: tanpa animasi, hanya tombol Maps yang pop-reveal -->
+          <div class="mb-16">
+            <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
+              Akad Nikah
+            </h2>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.4rem; color: #222"
+            >
+              Jum'at
+            </p>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.5rem; color: #222"
+            >
+              Jum'at, 16 Oktober 2026
+            </p>
+            <p class="font-serif text-[#555] mt-1">09.00 WIB</p>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p class="font-serif font-bold" style="color: #222">
+              Kediaman Mempelai Wanita
+            </p>
+            <p class="font-serif text-[#666] text-sm mt-1 leading-relaxed">
+              Jl. Karet Pasar Baru Barat V No.92, RW.4, Karet Tengsin, Kecamatan
+              Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta
+              10250
+            </p>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Jl.+Karet+Pasar+Baru+Barat+V+No.92+Jakarta"
+              target="_blank"
+              class="reveal-up-scroll inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-full font-serif"
+              style="background: var(--wine); color: var(--ivory)"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="var(--ivory)"
+              >
+                <path
+                  d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
+                />
+              </svg>
+              Google Maps
+            </a>
+          </div>
+
+          <!-- Resepsi: tanpa animasi, hanya tombol Maps yang pop-reveal -->
+          <div class="mb-16">
+            <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
+              Resepsi
+            </h2>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.4rem; color: #222"
+            >
+              Jum'at
+            </p>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.5rem; color: #222"
+            >
+              Jum'at, 16 Oktober 2026
+            </p>
+            <p class="font-serif text-[#555] mt-1">09.00 WIB - Selesai</p>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p class="font-serif font-bold" style="color: #222">
+              Kantor Desa Bojongkunci
+            </p>
+            <p class="font-serif text-[#666] text-sm mt-1 leading-relaxed">
+              Jl. Desa Bojong Kunci, Bojong Kunci, Kec. Pameungpeuk, Kabupaten Bandung, Jawa Barat
+            </p>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Jl.+Karet+Pasar+Baru+Barat+V+No.92+Jakarta"
+              target="_blank"
+              class="reveal-up-scroll inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-full font-serif"
+              style="background: var(--wine); color: var(--ivory)"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="var(--ivory)"
+              >
+                <path
+                  d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
+                />
+              </svg>
+              Google Maps
+            </a>
+          </div>
+
+          <!-- Ngunduh Mantu: tanpa animasi, hanya tombol Maps yang pop-reveal -->
+          <div>
+            <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
+              Ngunduh Mantu
+            </h2>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.4rem; color: #222"
+            >
+              Kamis
+            </p>
+            <p
+              class="font-serif font-bold"
+              style="font-size: 1.5rem; color: #222"
+            >
+              Kamis, 22 April 2027
+            </p>
+            <p class="font-serif text-[#555] mt-1">10.00 WIB</p>
+            <div
+              class="mx-auto my-4"
+              style="width: 1px; height: 32px; background: #333"
+            ></div>
+            <p class="font-serif font-bold" style="color: #222">
+              Kediaman Mempelai Pria
+            </p>
+            <p class="font-serif text-[#666] text-sm mt-1 leading-relaxed">
+              Jl. KH Moh Mussa
+            </p>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Jl.+KH+Moh+Mussa"
+              target="_blank"
+              class="reveal-up-scroll inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-full font-serif"
+              style="background: var(--wine); color: var(--ivory)"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="var(--ivory)"
+              >
+                <path
+                  d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
+                />
+              </svg>
+              Google Maps
+            </a>
+          </div>
+        </section>
+
+        <section
+          id="section-gallery"
+          class="relative bg-[var(--ivory)] px-6 py-20 text-center"
+        >
+          <!-- Judul: dari bawah ke atas -->
+          <h2
+            id="gallery-title"
+            class="reveal-up-scroll font-serif font-bold"
+            style="font-size: 2.4rem; color: var(--wine)"
+          >
+            Gallery
+          </h2>
+
+          <!-- Grid foto: muncul satu-satu, cepat, saat discroll -->
+          <div class="grid grid-cols-3 gap-2 mt-10">
+            <img
+              src="assets/gallery-1.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0s"
+              alt="Gallery 1"
+            />
+            <img
+              src="assets/gallery-2.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0.08s"
+              alt="Gallery 2"
+            />
+            <img
+              src="assets/gallery-3.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0.16s"
+              alt="Gallery 3"
+            />
+            <img
+              src="assets/gallery-4.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0.24s"
+              alt="Gallery 4"
+            />
+            <img
+              src="assets/gallery-5.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0.32s"
+              alt="Gallery 5"
+            />
+            <img
+              src="assets/gallery-6.jpg"
+              class="gallery-reveal w-full h-full object-cover"
+              style="aspect-ratio: 1/1; transition-delay: 0.4s"
+              alt="Gallery 6"
+            />
+          </div>
+        </section>
+
+        <section
+          id="section-lovestory"
+          class="relative bg-[var(--ivory)] px-6 py-20 overflow-hidden"
+        >
+          <!-- Judul: animasi dari kecil menjadi lebar -->
+          <h2
+            id="lovestory-title"
+            class="title-expand font-serif font-bold text-center"
+            style="font-size: 2.6rem; color: var(--wine)"
+          >
+            Love Story
+          </h2>
+
+          <div class="relative mt-14" style="padding-left: 56px">
+            <!-- garis timeline di sisi kiri -->
+            <div
+              class="absolute"
+              style="
+                left: 20px;
+                top: 8px;
+                bottom: 8px;
+                width: 1px;
+                background: #999;
+              "
+            ></div>
+
+            <!-- Item 1 -->
+            <div class="text-left mb-14">
+              <div
+                class="overflow-hidden mb-4"
+                style="width: 230px; height: 230px; border-radius: 16px"
+              >
+                <img
+                  src="assets/love-1.jpg"
+                  class="w-full h-full object-cover"
+                  alt="Awal Pertemuan"
+                />
+              </div>
+              <h3
+                class="font-serif italic"
+                style="font-size: 1.6rem; color: #4a5a3a"
+              >
+                Awal Pertemuan
+              </h3>
+              <!-- <p class="font-serif text-[#666] mt-1">4 Februari 2019</p> -->
+              <p
+                class="font-serif text-[#555] mt-3 leading-relaxed"
+                style="max-width: 280px"
+              >
+                Awal bertemu di suatu sekolah d
+              </p>
+              <div
+                class="flex items-center gap-3 mt-6"
+                style="max-width: 280px"
+              >
+                <span class="h-px flex-1" style="background: #333"></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#333">
+                  <path
+                    d="M12 21s-7-4.35-9.5-8.5C.5 8.5 2.5 5 6 5c2 0 3.5 1 4 2 .5-1 2-2 4-2 3.5 0 5.5 3.5 3.5 7.5C19 16.65 12 21 12 21z"
+                  />
+                </svg>
+                <span class="h-px flex-1" style="background: #333"></span>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="text-left mb-14">
+              <div
+                class="overflow-hidden mb-4"
+                style="width: 230px; height: 230px; border-radius: 16px"
+              >
+                <img
+                  src="assets/love-2.jpg"
+                  class="w-full h-full object-cover"
+                  alt="Langkah Pertama"
+                />
+              </div>
+              <h3
+                class="font-serif italic"
+                style="font-size: 1.6rem; color: #4a5a3a"
+              >
+                Langkah Pertama
+              </h3>
+              <p class="font-serif text-[#666] mt-1">10 Maret 2019</p>
+              <p
+                class="font-serif text-[#555] mt-3 leading-relaxed"
+                style="max-width: 280px"
+              >
+                Setelah beberapa kali bertemu, kami memutuskan untuk saling
+                mengenal lebih jauh. Obrolan singkat berubah menjadi percakapan
+                panjang setiap malam.
+              </p>
+              <div
+                class="flex items-center gap-3 mt-6"
+                style="max-width: 280px"
+              >
+                <span class="h-px flex-1" style="background: #333"></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#333">
+                  <path
+                    d="M12 21s-7-4.35-9.5-8.5C.5 8.5 2.5 5 6 5c2 0 3.5 1 4 2 .5-1 2-2 4-2 3.5 0 5.5 3.5 3.5 7.5C19 16.65 12 21 12 21z"
+                  />
+                </svg>
+                <span class="h-px flex-1" style="background: #333"></span>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="text-left mb-14">
+              <div
+                class="overflow-hidden mb-4"
+                style="width: 230px; height: 230px; border-radius: 16px"
+              >
+                <img
+                  src="assets/love-3.jpg"
+                  class="w-full h-full object-cover"
+                  alt="Semakin Dekat"
+                />
+              </div>
+              <h3
+                class="font-serif italic"
+                style="font-size: 1.6rem; color: #4a5a3a"
+              >
+                Semakin Dekat
+              </h3>
+              <p class="font-serif text-[#666] mt-1">2 Juni 2020</p>
+              <p
+                class="font-serif text-[#555] mt-3 leading-relaxed"
+                style="max-width: 280px"
+              >
+                Waktu membawa kami semakin dekat. Suka dan duka dilalui bersama,
+                hingga akhirnya kami sadar bahwa kami saling melengkapi.
+              </p>
+              <div
+                class="flex items-center gap-3 mt-6"
+                style="max-width: 280px"
+              >
+                <span class="h-px flex-1" style="background: #333"></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#333">
+                  <path
+                    d="M12 21s-7-4.35-9.5-8.5C.5 8.5 2.5 5 6 5c2 0 3.5 1 4 2 .5-1 2-2 4-2 3.5 0 5.5 3.5 3.5 7.5C19 16.65 12 21 12 21z"
+                  />
+                </svg>
+                <span class="h-px flex-1" style="background: #333"></span>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="text-left">
+              <div
+                class="overflow-hidden mb-4"
+                style="width: 230px; height: 230px; border-radius: 16px"
+              >
+                <img
+                  src="assets/love-4.jpg"
+                  class="w-full h-full object-cover"
+                  alt="Menuju Pelaminan"
+                />
+              </div>
+              <h3
+                class="font-serif italic"
+                style="font-size: 1.6rem; color: #4a5a3a"
+              >
+                Menuju Pelaminan
+              </h3>
+              <p class="font-serif text-[#666] mt-1">15 Januari 2027</p>
+              <p
+                class="font-serif text-[#555] mt-3 leading-relaxed"
+                style="max-width: 280px"
+              >
+                Dengan restu kedua orang tua, kami memutuskan untuk melangkah ke
+                jenjang yang lebih serius menuju hari bahagia kami.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="section-gift"
+          class="relative overflow-hidden px-6 py-24 text-center"
+          style="min-height: 100svh"
+        >
+          <div
+            class="absolute inset-0"
+            style="
+              background-image: url(&quot;assets/foto-1.jpg&quot;);
+              background-size: cover;
+              background-position: center;
+            "
+          ></div>
+          <!-- overlay lebih terang / opacity dikurangi dibanding section lain -->
+          <div
+            class="absolute inset-0"
+            style="background: rgba(20, 20, 15, 0.5)"
+          ></div>
+
+          <div class="relative z-10">
+            <h2
+              class="font-serif"
+              style="font-size: 2.6rem; color: var(--ivory)"
+            >
+              Wedding Gift
+            </h2>
+            <p
+              class="font-serif italic text-[var(--ivory)] max-w-md mx-auto mt-6 leading-relaxed"
+              style="opacity: 0.9"
+            >
+              Doa Restu Anda merupakan karunia yang sangat berarti bagi kami.
+              Namun jika memberi adalah ungkapan tanda kasih Anda, Anda dapat
+              memberi kado secara cashless.
+            </p>
+            <button
+              id="gift-toggle-btn"
+              class="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full font-serif font-bold"
+              style="
+                background: var(--wine);
+                color: var(--ivory);
+                border: none;
+                cursor: pointer;
+              "
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--ivory)"
+                stroke-width="1.8"
+              >
+                <rect x="3" y="8" width="18" height="13" rx="2" />
+                <path
+                  d="M3 12h18M12 8v13M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"
+                />
+              </svg>
+              Hadiah Digital
+            </button>
+          </div>
+
+          <!-- Daftar rekening: tersembunyi dulu, muncul saat tombol "Hadiah Digital" diklik -->
+          <div
+            id="gift-cards-wrap"
+            class="hidden relative z-10 mt-8"
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+              align-items: center;
+            "
+          >
+            <!-- Kartu 1: contoh BCA -->
+            <div
+              class="rounded-2xl p-5 text-left"
+              style="
+                max-width: 340px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.92);
+              "
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-serif text-lg text-[#333]">Gift Card</span>
+                <span class="font-bold text-xl" style="color: #1560bd"
+                  >BCA</span
+                >
+              </div>
+              <svg
+                width="28"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#999"
+                stroke-width="1.6"
+                class="mt-4"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M3 9h18M7 14h4" />
+              </svg>
+              <p class="text-xs text-[#999] mt-4">Nomor Rekening</p>
+              <div class="flex items-center justify-between mt-1">
+                <span class="font-bold text-lg text-[#222]" id="rek-1"
+                  >3460774054</span
+                >
+                <button
+                  class="copy-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-white"
+                  data-target="rek-1"
+                  style="background: var(--wine); border: none; cursor: pointer"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="2"
+                  >
+                    <rect x="9" y="9" width="12" height="12" rx="2" />
+                    <rect x="3" y="3" width="12" height="12" rx="2" />
+                  </svg>
+                  <span class="copy-label">Copy</span>
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <div>
+                  <p class="text-xs text-[#999]">Muhamad Firliansyah</p>
+                  <p class="font-bold text-[#222]">Norek 1</p>
+                </div>
+                <span class="text-xs text-[#999]">Event</span>
+              </div>
+            </div>
+
+            <!-- Kartu 2: rekening lain, logo placeholder -->
+            <div
+              class="rounded-2xl p-5 text-left"
+              style="
+                max-width: 340px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.92);
+              "
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-serif text-lg text-[#333]">Gift Card</span>
+                <span class="text-sm text-[#999]">🖼️ Mandiri</span>
+              </div>
+              <svg
+                width="28"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#999"
+                stroke-width="1.6"
+                class="mt-4"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M3 9h18M7 14h4" />
+              </svg>
+              <p class="text-xs text-[#999] mt-4">Nomor Rekening</p>
+              <div class="flex items-center justify-between mt-1">
+                <span class="font-bold text-lg text-[#222]" id="rek-2"
+                  >1300021630531</span
+                >
+                <button
+                  class="copy-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-white"
+                  data-target="rek-2"
+                  style="background: var(--wine); border: none; cursor: pointer"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="2"
+                  >
+                    <rect x="9" y="9" width="12" height="12" rx="2" />
+                    <rect x="3" y="3" width="12" height="12" rx="2" />
+                  </svg>
+                  <span class="copy-label">Copy</span>
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <div>
+                  <p class="text-xs text-[#999]">Allya Khairinissa</p>
+                  <p class="font-bold text-[#222]">Norek 2</p>
+                </div>
+                <span class="text-xs text-[#999]">Event</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="section-rsvp"
+          class="relative overflow-hidden px-6 py-24"
+          style="min-height: 100svh"
+        >
+          <div
+            class="absolute inset-0"
+            style="
+              background-image: url(&quot;assets/foto-1.jpg&quot;);
+              background-size: cover;
+              background-position: center;
+            "
+          ></div>
+          <div
+            class="absolute inset-0"
+            style="background: rgba(15, 15, 12, 0.55)"
+          ></div>
+
+          <div class="relative z-10 text-center">
+            <!-- Judul: animasi dari kecil ke besar -->
+            <h2
+              id="rsvp-title"
+              class="title-expand font-serif font-bold"
+              style="font-size: 2.6rem; color: var(--ivory)"
+            >
+              Ucapan &amp; Doa
+            </h2>
+          </div>
+
+          <!-- Card luar (putih, sedikit transparan) -->
+          <div
+            class="relative z-10 mt-8 mx-auto rounded-3xl p-6"
+            style="max-width: 400px; background: rgba(255, 255, 255, 0.95)"
+          >
+            <p
+              class="font-serif italic text-center text-[#444] leading-relaxed"
+            >
+              Berikan ucapan harapan dan do'a<br />kepada kedua mempelai
+            </p>
+
+            <!-- Card dalam (biru muda): form -->
+            <div class="rounded-2xl mt-8 p-6" style="background: #eef2f7">
+              <h3
+                class="font-serif font-bold text-center"
+                style="font-size: 1.4rem; color: #1c2a3a"
+              >
+                Kirim Ucapan &amp;<br />Konfirmasi Kehadiran
+              </h3>
+
+              <label
+                class="block font-serif font-bold mt-6 mb-2"
+                style="color: #1c2a3a"
+                >Nama Anda</label
+              >
+              <input
+                id="rsvp-name"
+                type="text"
+                placeholder="Tulis nama Anda di sini..."
+                class="w-full rounded-xl px-4 py-3 font-serif"
+                style="
+                  border: 1px solid #ccc;
+                  background: white;
+                  box-sizing: border-box;
+                "
+              />
+
+              <label
+                class="block font-serif font-bold mt-6 mb-2"
+                style="color: #1c2a3a"
+                >Konfirmasi Kehadiran</label
+              >
+              <div class="flex flex-col gap-3">
+                <button
+                  type="button"
+                  class="rsvp-status-btn rounded-xl py-3 font-serif font-bold"
+                  data-status="Hadir"
+                  style="
+                    border: 2px solid #1c2a3a;
+                    color: #1c2a3a;
+                    background: transparent;
+                    cursor: pointer;
+                  "
+                >
+                  Hadir
+                </button>
+                <div class="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    class="rsvp-status-btn rounded-xl py-3 font-serif font-bold"
+                    data-status="Masih Ragu"
+                    style="
+                      border: 2px solid #1c2a3a;
+                      color: #1c2a3a;
+                      background: transparent;
+                      cursor: pointer;
+                    "
+                  >
+                    Masih Ragu
+                  </button>
+                  <button
+                    type="button"
+                    class="rsvp-status-btn rounded-xl py-3 font-serif font-bold"
+                    data-status="Tidak Hadir"
+                    style="
+                      border: 2px solid #1c2a3a;
+                      color: #1c2a3a;
+                      background: transparent;
+                      cursor: pointer;
+                    "
+                  >
+                    Tidak Hadir
+                  </button>
+                </div>
+              </div>
+
+              <label
+                class="block font-serif font-bold mt-6 mb-2"
+                style="color: #1c2a3a"
+                >Tulis Ucapan</label
+              >
+              <textarea
+                id="rsvp-message"
+                rows="4"
+                placeholder="Tulis ucapan atau pilih stiker..."
+                class="w-full rounded-xl px-4 py-3 font-serif"
+                style="
+                  border: 1px solid #ccc;
+                  background: white;
+                  box-sizing: border-box;
+                "
+              ></textarea>
+
+              <button
+                id="rsvp-submit-btn"
+                class="w-full mt-6 py-3 rounded-xl font-serif font-bold"
+                style="
+                  background: var(--wine);
+                  color: var(--ivory);
+                  border: none;
+                  cursor: pointer;
+                "
+              >
+                Kirim
+              </button>
+            </div>
+
+            <!-- Riwayat ucapan: terisi otomatis setelah kirim -->
+            <div
+              id="rsvp-history"
+              class="mt-8"
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                text-align: left;
+              "
+            ></div>
+          </div>
+        </section>
+
+        <section
+          id="section-closing"
+          class="relative overflow-hidden px-6 pt-24 pb-12 text-center"
+          style="min-height: 100svh"
+        >
+          <div
+            class="absolute inset-0"
+            style="
+              background-image: url(&quot;assets/foto-1.jpg&quot;);
+              background-size: cover;
+              background-position: center;
+            "
+          ></div>
+          <!-- Gradien 2 warna: wine di atas menuju coklat gelap di bawah -->
+          <div
+            class="absolute inset-0"
+            style="
+              background: linear-gradient(
+                180deg,
+                rgba(110, 31, 42, 0.6) 0%,
+                rgba(28, 16, 10, 0.88) 100%
+              );
+            "
+          ></div>
+
+          <div
+            class="relative z-10"
+            style="
+              min-height: calc(100svh - 96px);
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+            "
+          >
+            <div>
+              <!-- Garis + diamond: animasi dari kecil ke besar -->
+              <div
+                class="zoom-in-reveal flex items-center justify-center gap-3 mb-10"
+              >
+                <span class="h-px w-16" style="background: var(--ivory)"></span>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--ivory)"
+                  stroke-width="1.4"
+                >
+                  <path d="M12 2 L20 12 L12 22 L4 12 Z" />
+                </svg>
+                <span class="h-px w-16" style="background: var(--ivory)"></span>
+              </div>
+
+              <!-- Foto: animasi dari kecil ke besar -->
+              <div
+                class="zoom-in-reveal mx-auto"
+                style="
+                  width: 260px;
+                  height: 340px;
+                  border-radius: 130px;
+                  border: 1.5px solid var(--ivory);
+                  padding: 8px;
+                  box-sizing: border-box;
+                "
+              >
+                <div
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 130px;
+                    border: 1.5px solid var(--ivory);
+                    overflow: hidden;
+                    box-sizing: border-box;
+                  "
+                >
+                  <img
+                    src="assets/foto-1.jpg"
+                    class="w-full h-full object-cover"
+                    alt="Dilan & Millea"
+                  />
+                </div>
+              </div>
+
+              <!-- Teks penutup: dari bawah ke atas -->
+              <div
+                class="reveal-up-scroll mt-10 font-serif text-[var(--ivory)] leading-relaxed"
+              >
+                <p>
+                  Atas kehadiran dan do'a restu dari Bapak/Ibu/Saudara/i
+                  sekalian, kami mengucapkan Terima Kasih.
+                </p>
+                <p class="mt-4">Wassalamualaikum Wr. Wb.</p>
+                <p class="mt-4 font-script" style="font-size: 2.2rem">
+                  Millea &amp; Dilan
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer promosi: opsional, hapus/ganti sesuai kebutuhan. Masih di dalam section yang sama -->
+            <div
+              class="mt-16 pt-5"
+              style="border-top: 1px solid rgba(255, 255, 255, 0.25)"
+            >
+              <p
+                class="font-serif"
+                style="
+                  font-size: 0.75rem;
+                  color: rgba(255, 255, 255, 0.65);
+                  letter-spacing: 0.5px;
+                "
+              >
+                Undangan digital ini dibuat dengan ♥ oleh
+                <span style="color: var(--ivory); font-weight: 600"
+                  >@yudwalldnn</span
+                >
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // ---- Foto carousel: ganti slide setiap 4.5 detik ----
+      const slides = document.querySelectorAll(".bg-slide");
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove("active");
+        current = (current + 1) % slides.length;
+        slides[current].classList.add("active");
+      }, 4500);
+
+      // ---- Ganti nama tamu lewat parameter URL, misal ?tamu=Budi ----
+      const params = new URLSearchParams(window.location.search);
+      const tamu = params.get("tamu");
+      if (tamu) {
+        document.getElementById("guest-name").textContent =
+          decodeURIComponent(tamu);
+      }
+
+      // ---- Tombol "Buka Undangan" ----
+      const cover = document.getElementById("cover");
+      const openBtn = document.getElementById("open-btn");
+      cover.classList.add("opening");
+
+      openBtn.addEventListener("click", () => {
+        cover.classList.add("hide");
+        document.body.classList.remove("pre-open");
+        document.getElementById("next-section").classList.remove("hidden");
+        document.getElementById("floating-fab").classList.remove("hidden");
+        setTimeout(() => {
+          document.getElementById("section2-text").classList.add("show");
+        }, 300);
+        setTimeout(checkRevealOnScroll, 500);
+      });
+
+      // ---- Tombol musik: play/pause ----
+      const musicBtn = document.getElementById("music-btn");
+      const audio = document.getElementById("bg-audio");
+      let isPlaying = false;
+      musicBtn.addEventListener("click", () => {
+        if (isPlaying) {
+          audio.pause();
+        } else {
+          audio.play().catch(() => {});
+        }
+        isPlaying = !isPlaying;
+        musicBtn.classList.toggle("playing", isPlaying);
+      });
+
+      // ---- Section 3+: animasi muncul/reset tiap kali elemen masuk-keluar layar (bisa replay, dua arah) ----
+      function checkRevealOnScroll() {
+        document
+          .querySelectorAll(
+            ".dm-letter, .ayat-reveal, .pop-reveal, .reveal-up-scroll, .zoom-out-reveal, .title-expand, .zoom-in-reveal, .gallery-reveal",
+          )
+          .forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const isVisible =
+              rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+            el.classList.toggle("in-view", isVisible);
+          });
+      }
+      window.addEventListener("scroll", checkRevealOnScroll, { passive: true });
+      window.addEventListener("resize", checkRevealOnScroll);
+      document
+        .querySelector(".invite-frame")
+        .addEventListener("scroll", checkRevealOnScroll, { passive: true });
+      checkRevealOnScroll();
+
+      // ---- Countdown Save The Date ----
+      // GANTI tanggal & jam acara di bawah ini sesuai kebutuhan
+      const weddingDate = new Date("2026-10-16T09:00:00+07:00");
+
+      function updateCountdown() {
+        const now = new Date();
+        let diff = weddingDate - now;
+        if (diff < 0) diff = 0;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+        document.getElementById("cd-days").textContent = String(days).padStart(
+          2,
+          "0",
+        );
+        document.getElementById("cd-hours").textContent = String(
+          hours,
+        ).padStart(2, "0");
+        document.getElementById("cd-minutes").textContent = String(
+          minutes,
+        ).padStart(2, "0");
+        document.getElementById("cd-seconds").textContent = String(
+          seconds,
+        ).padStart(2, "0");
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      // ---- Tombol "Simpan di Kalender": buka Google Calendar terisi otomatis ----
+      document
+        .getElementById("save-calendar-btn")
+        .addEventListener("click", () => {
+          // GANTI judul, deskripsi, lokasi, dan waktu (format UTC: YYYYMMDDTHHmmssZ) di bawah ini
+          const title = encodeURIComponent("Pernikahan Dilan & Millea");
+          const details = encodeURIComponent(
+            "Dengan segala kerendahan hati kami mengundang Bapak/Ibu/Saudara/i.",
+          );
+          const location = encodeURIComponent("Nama Gedung, Alamat Lengkap");
+          const start = "20270320T010000Z";
+          const end = "20270320T040000Z";
+          const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+          window.open(url, "_blank");
+        });
+
+      // ---- Tombol "Hadiah Digital": tampilkan/sembunyikan daftar rekening ----
+      document
+        .getElementById("gift-toggle-btn")
+        .addEventListener("click", () => {
+          document.getElementById("gift-cards-wrap").classList.toggle("hidden");
+        });
+
+      // ---- Tombol "Copy": salin nomor rekening ----
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = document.getElementById(btn.dataset.target);
+          const label = btn.querySelector(".copy-label");
+          navigator.clipboard
+            .writeText(target.textContent.trim())
+            .then(() => {
+              const original = label.textContent;
+              label.textContent = "Tersalin!";
+              setTimeout(() => {
+                label.textContent = original;
+              }, 1500);
+            })
+            .catch(() => {});
+        });
+      });
+
+      // ---- RSVP: pilih status kehadiran (single-select) ----
+      let selectedStatus = null;
+      document.querySelectorAll(".rsvp-status-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".rsvp-status-btn").forEach((b) => {
+            b.style.background = "transparent";
+            b.style.color = "#1c2a3a";
+          });
+          btn.style.background = "var(--wine)";
+          btn.style.color = "var(--ivory)";
+          selectedStatus = btn.dataset.status;
+        });
+      });
+
+      // ---- RSVP: riwayat ucapan ----
+      // CATATAN PENTING: ucapan disimpan di localStorage BROWSER INI SAJA, bukan database bersama.
+      // Artinya tiap tamu hanya akan melihat ucapannya sendiri di perangkatnya, bukan ucapan tamu lain.
+      // Untuk ucapan yang bisa dilihat semua tamu, perlu backend/database (mis. Google Sheets API, Firebase, dll) — beri tahu saya kalau mau dibuatkan.
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+      // ---- Format waktu relatif: Hari ini / Kemarin / X hari lalu / X Minggu lalu / X Bulan lalu / X Tahun lalu ----
+      function formatRelativeTime(timestamp) {
+        if (!timestamp) return "";
+        const now = new Date();
+        const then = new Date(timestamp);
+        const startOfDay = (d) =>
+          new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const dayDiff = Math.round(
+          (startOfDay(now) - startOfDay(then)) / (1000 * 60 * 60 * 24),
+        );
+
+        if (dayDiff <= 0) return "Hari ini";
+        if (dayDiff === 1) return "Kemarin";
+        if (dayDiff < 7) return dayDiff + " hari lalu";
+        const weekDiff = Math.floor(dayDiff / 7);
+        if (weekDiff < 5)
+          return weekDiff + (weekDiff === 1 ? " Minggu lalu" : " Minggu lalu");
+        const monthDiff = Math.floor(dayDiff / 30);
+        if (monthDiff < 12)
+          return monthDiff + (monthDiff === 1 ? " Bulan lalu" : " Bulan lalu");
+        const yearDiff = Math.floor(dayDiff / 365);
+        return yearDiff + (yearDiff === 1 ? " Tahun lalu" : " Tahun lalu");
+      }
+      function loadRsvpHistory() {
+        try {
+          return JSON.parse(localStorage.getItem("rsvp-history") || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function renderRsvpHistory() {
+        const list = loadRsvpHistory();
+        const wrap = document.getElementById("rsvp-history");
+        wrap.innerHTML = list
+          .slice()
+          .reverse()
+          .map(
+            (item) => `
+      <div class="rounded-xl p-4" style="background:#f4f4f2; border:1px solid #e5e5e5;">
+        <div class="flex items-center justify-between">
+          <span class="font-serif font-bold" style="color:#1c2a3a;">${escapeHtml(item.name)}</span>
+          <span class="text-xs font-serif px-2 py-1 rounded-full" style="background:var(--wine); color:var(--ivory);">${escapeHtml(item.status)}</span>
+        </div>
+        <p class="font-serif text-sm text-[#555] mt-2">${escapeHtml(item.message)}</p>
+        <p class="font-serif text-xs mt-2" style="color:#999;">${escapeHtml(formatRelativeTime(item.time))}</p>
+      </div>
+    `,
+          )
+          .join("");
+      }
+      renderRsvpHistory();
+
+      document
+        .getElementById("rsvp-submit-btn")
+        .addEventListener("click", () => {
+          const nameInput = document.getElementById("rsvp-name");
+          const msgInput = document.getElementById("rsvp-message");
+          const name = nameInput.value.trim();
+          const message = msgInput.value.trim();
+          if (!name || !selectedStatus) {
+            alert("Isi nama dan pilih konfirmasi kehadiran dulu ya.");
+            return;
+          }
+          const list = loadRsvpHistory();
+          list.push({
+            name,
+            status: selectedStatus,
+            message: message || "-",
+            time: Date.now(),
+          });
+          localStorage.setItem("rsvp-history", JSON.stringify(list));
+          nameInput.value = "";
+          msgInput.value = "";
+          renderRsvpHistory();
+        });
+    </script>
+  </body>
+</html>
