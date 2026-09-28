@@ -13,375 +13,362 @@
       href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel="stylesheet" href="style.css" /> -->
     <style>
       :root {
-  --ivory: #f6f1e7;
-  --ivory-dim: rgba(246, 241, 231, 0.78);
-  --wine: #a6332c;
-  --wine-light: #c24c3e;
-  --gold: #c9a968;
-  --overlay-top: rgba(10, 10, 8, 0.15);
-  --overlay-bottom: rgba(8, 8, 6, 0.86);
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  overflow-x: hidden;
-  max-width: 100vw;
-  overscroll-behavior: none;
-}
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-body.pre-open {
-  overflow: hidden;
-  height: 100svh;
-}
-body.pre-open .invite-frame {
-  overflow-y: hidden !important;
-}
-
-/* Sembunyikan scrollbar (kanan/bawah) di semua browser, scroll tetap berfungsi normal */
-html,
-body,
-.invite-frame {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Edge lama */
-}
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-.invite-frame::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge baru */
-  width: 0;
-  height: 0;
-}
-.font-script {
-  font-family: "Alex Brush", cursive;
-}
-.font-serif {
-  font-family: "Cormorant Garamond", serif;
-}
-
-/* ===== JAMINAN: aturan krusial ini TIDAK bergantung Tailwind CDN, ====
-     supaya tetap jalan walau cdn.tailwindcss.com gagal load (offline/lambat) ===== */
-.hidden {
-  display: none !important;
-}
-#next-section {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-}
-#floating-fab {
-  position: sticky;
-  bottom: 0;
-  height: 0;
-  z-index: 30;
-}
-#floating-fab > div {
-  position: absolute;
-  right: 20px;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 30;
-}
-
-/* ===== Frame: di layar lebar, undangan tampil sebagai kartu ala-HP di tengah ===== */
-.invite-stage {
-  min-height: 100svh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-}
-.invite-frame {
-  position: relative;
-  width: 100%;
-  min-height: 100svh;
-  overflow-x: hidden;
-}
-@media (min-width: 900px) {
-  .invite-stage {
-    padding: 40px 0;
-    background: #0a0a08;
-  }
-  .invite-frame {
-    width: min(430px, 92vw);
-    max-height: 92svh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border-radius: 28px;
-    box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.6),
-      0 0 0 10px #111;
-  }
-}
-
-/* ===== Cover ===== */
-#cover {
-  position: relative;
-  height: 100svh;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* Foto carousel */
-.bg-slide {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transform: scale(1.06);
-  transition:
-    opacity 1.8s ease-in-out,
-    transform 8s ease-out;
-}
-.bg-slide.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.overlay-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 10, 8, 0.5) 0%,
-    rgba(10, 10, 8, 0.35) 35%,
-    rgba(10, 10, 8, 0.55) 60%,
-    var(--overlay-bottom) 100%
-  );
-}
-
-/* Nama mempelai — ayun dulu (settle), lalu melandai jadi goyang pelan menetap */
-@keyframes sway-settle {
-  0% {
-    transform: rotate(0deg);
-  }
-  12% {
-    transform: rotate(-7deg);
-  }
-  28% {
-    transform: rotate(6deg);
-  }
-  44% {
-    transform: rotate(-4deg);
-  }
-  60% {
-    transform: rotate(2.5deg);
-  }
-  76% {
-    transform: rotate(-1.5deg);
-  }
-  90% {
-    transform: rotate(0.8deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
-@keyframes sway-idle {
-  0%,
-  100% {
-    transform: rotate(-1.4deg) translateY(0);
-  }
-  50% {
-    transform: rotate(1.4deg) translateY(-2px);
-  }
-}
-.name-script {
-  animation-name: sway-settle, sway-idle;
-  animation-duration: 2s, 5s;
-  animation-timing-function: ease-out, ease-in-out;
-  animation-delay: 0s, 2s;
-  animation-iteration-count: 1, infinite;
-  animation-fill-mode: both, none;
-  text-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.55),
-    0 4px 24px rgba(0, 0, 0, 0.5);
-}
-.name-script.delay {
-  animation-delay: 0.6s, 2.6s;
-}
-
-/* Kepada Yth — muncul dari bawah ke atas */
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.guest-block {
-  opacity: 0;
-  animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.1s forwards;
-}
-
-/* Tombol buka undangan: animasi sama persis dengan "Kepada Yth." — muncul dari bawah sekali saja */
-.cta-btn {
-  opacity: 0;
-  animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.5s forwards;
-}
-
-/* Transisi saat cover dibuka */
-#cover.opening {
-  transition:
-    opacity 1.1s ease,
-    transform 1.1s ease;
-}
-#cover.opening.hide {
-  opacity: 0;
-  transform: scale(1.03);
-  pointer-events: none;
-}
-
-/* ===== Section 2: nama + garis-diamond, muncul dari bawah ===== */
-.section2-reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.section2-reveal.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-#music-btn.playing svg {
-  animation: spin-slow 4s linear infinite;
-}
-
-/* ===== Section 3: animasi muncul saat discroll ===== */
-.dm-letter {
-  opacity: 0;
-  transition:
-    opacity 0.9s ease,
-    transform 0.9s ease;
-}
-.dm-from-left {
-  transform: translateX(-60px);
-}
-.dm-from-right {
-  transform: translateX(60px);
-}
-.dm-letter.in-view {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.ayat-reveal {
-  opacity: 0;
-  transform: translateY(-30px);
-  transition:
-    opacity 1s ease,
-    transform 1s ease;
-}
-.ayat-reveal.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.pop-reveal {
-  opacity: 0;
-  transition: opacity 0.15s linear;
-}
-.pop-reveal.in-view {
-  opacity: 1;
-}
-
-.reveal-up-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 1s ease,
-    transform 1s ease;
-}
-.reveal-up-scroll.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.zoom-out-reveal {
-  opacity: 0;
-  transform: scale(1.3);
-  transition:
-    opacity 1s ease,
-    transform 1s ease;
-}
-.zoom-out-reveal.in-view {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Judul: dari kecil menjadi lebar/normal */
-.title-expand {
-  opacity: 0;
-  transform: scale(0.4);
-  transition:
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.title-expand.in-view {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Kebalikan zoom-out: dari kecil menjadi besar/normal */
-.zoom-in-reveal {
-  opacity: 0;
-  transform: scale(0.3);
-  transition:
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.zoom-in-reveal.in-view {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Galeri: muncul satu-satu, cepat */
-.gallery-reveal {
-  opacity: 0;
-  transform: translateY(20px) scale(0.9);
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
-}
-.gallery-reveal.in-view {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
+        --ivory: #f6f1e7;
+        --ivory-dim: rgba(246, 241, 231, 0.78);
+        --wine: #a6332c;
+        --wine-light: #c24c3e;
+        --gold: #c9a968;
+        --overlay-top: rgba(10, 10, 8, 0.15);
+        --overlay-bottom: rgba(8, 8, 6, 0.86);
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        overflow-x: hidden;
+        max-width: 100vw;
+        overscroll-behavior: none;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body.pre-open {
+        overflow: hidden;
+        height: 100vh;
+        height: 100svh;
+      }
+      body:not(.pre-open) {
+        overflow-y: auto !important;
+        height: auto !important;
+      }
+      body.pre-open .invite-frame {
+        overflow-y: hidden !important;
+      }
+      html,
+      body,
+      .invite-frame {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar,
+      .invite-frame::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      .font-script {
+        font-family: "Alex Brush", cursive;
+      }
+      .font-serif {
+        font-family: "Cormorant Garamond", serif;
+      }
+      .hidden {
+        display: none !important;
+      }
+      #next-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+      }
+      #floating-fab {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        z-index: 30;
+        pointer-events: none;
+      }
+      #floating-fab > div {
+        position: absolute;
+        right: 20px;
+        bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 30;
+        pointer-events: auto;
+      }
+      .invite-stage {
+        min-height: 100vh;
+        min-height: 100svh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+      .invite-frame {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100svh;
+        overflow-x: hidden;
+      }
+      @media (min-width: 900px) {
+        .invite-stage {
+          padding: 40px 0;
+          background: #0a0a08;
+        }
+        .invite-frame {
+          width: min(430px, 92vw);
+          max-height: 92vh;
+          max-height: 92svh;
+          overflow-y: auto;
+          overflow-x: hidden;
+          border-radius: 28px;
+          box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.6),
+            0 0 0 10px #111;
+        }
+      }
+      #cover {
+        position: relative;
+        height: 100vh;
+        height: 100svh;
+        width: 100%;
+        overflow: hidden;
+      }
+      .bg-slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transform: scale(1.06);
+        transition:
+          opacity 1.8s ease-in-out,
+          transform 8s ease-out;
+      }
+      .bg-slide.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .overlay-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(10, 10, 8, 0.5) 0%,
+          rgba(10, 10, 8, 0.35) 35%,
+          rgba(10, 10, 8, 0.55) 60%,
+          var(--overlay-bottom) 100%
+        );
+      }
+      @keyframes sway-settle {
+        0% {
+          transform: rotate(0deg);
+        }
+        12% {
+          transform: rotate(-7deg);
+        }
+        28% {
+          transform: rotate(6deg);
+        }
+        44% {
+          transform: rotate(-4deg);
+        }
+        60% {
+          transform: rotate(2.5deg);
+        }
+        76% {
+          transform: rotate(-1.5deg);
+        }
+        90% {
+          transform: rotate(0.8deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+      @keyframes sway-idle {
+        0%,
+        100% {
+          transform: rotate(-1.4deg) translateY(0);
+        }
+        50% {
+          transform: rotate(1.4deg) translateY(-2px);
+        }
+      }
+      .name-script {
+        animation-name: sway-settle, sway-idle;
+        animation-duration: 2s, 5s;
+        animation-timing-function: ease-out, ease-in-out;
+        animation-delay: 0s, 2s;
+        animation-iteration-count: 1, infinite;
+        animation-fill-mode: both, none;
+        text-shadow:
+          0 2px 6px rgba(0, 0, 0, 0.55),
+          0 4px 24px rgba(0, 0, 0, 0.5);
+      }
+      .name-script.delay {
+        animation-delay: 0.6s, 2.6s;
+      }
+      @keyframes reveal-up {
+        from {
+          opacity: 0;
+          transform: translateY(28px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .guest-block {
+        opacity: 0;
+        animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.1s forwards;
+      }
+      .cta-btn {
+        opacity: 0;
+        animation: reveal-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.5s forwards;
+      }
+      #cover.opening {
+        transition:
+          opacity 1.1s ease,
+          transform 1.1s ease;
+      }
+      #cover.opening.hide {
+        opacity: 0;
+        transform: scale(1.03);
+        pointer-events: none;
+      }
+      .section2-reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .section2-reveal.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      @keyframes spin-slow {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #music-btn.playing svg {
+        animation: spin-slow 4s linear infinite;
+      }
+      .dm-letter {
+        opacity: 0;
+        transition:
+          opacity 0.9s ease,
+          transform 0.9s ease;
+      }
+      .dm-from-left {
+        transform: translateX(-60px);
+      }
+      .dm-from-right {
+        transform: translateX(60px);
+      }
+      .dm-letter.in-view {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .ayat-reveal {
+        opacity: 0;
+        transform: translateY(-30px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .ayat-reveal.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .pop-reveal {
+        opacity: 0;
+        transition: opacity 0.15s linear;
+      }
+      .pop-reveal.in-view {
+        opacity: 1;
+      }
+      .reveal-up-scroll {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .reveal-up-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .zoom-out-reveal {
+        opacity: 0;
+        transform: scale(1.3);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .zoom-out-reveal.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .title-expand {
+        opacity: 0;
+        transform: scale(0.4);
+        transition:
+          opacity 1s ease,
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .title-expand.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .zoom-in-reveal {
+        opacity: 0;
+        transform: scale(0.3);
+        transition:
+          opacity 1s ease,
+          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .zoom-in-reveal.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .gallery-reveal {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+      }
+      .gallery-reveal.in-view {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     </style>
   </head>
-   <body class="pre-open">
+  <body class="pre-open">
+    <!-- Audio: dipasang di sini (bukan di dalam section) supaya sudah aktif sejak cover, bukan cuma setelah dibuka -->
+    <!-- autoplay+muted supaya browser izinkan mulai otomatis saat halaman dibuka; begitu tombol "Buka Undangan" diklik, JS akan unmute -->
+    <audio
+      id="bg-audio"
+      src="music/Bernaung .mpeg"
+      loop
+      autoplay
+      muted
+      playsinline
+      preload="auto"
+    ></audio>
+
     <div class="invite-stage">
       <div class="invite-frame">
         <section id="cover">
-          <!-- ===== FOTO CAROUSEL (ganti background-image di sini) ===== -->
           <div
             class="bg-slide active"
             style="background-image: url(&quot;assets/foto 1.jpeg&quot;)"
@@ -394,15 +381,11 @@ body::-webkit-scrollbar,
             class="bg-slide"
             style="background-image: url(&quot;assets/foto 3.jpeg&quot;)"
           ></div>
-
           <div class="overlay-gradient"></div>
-
-          <!-- ===== KONTEN ===== -->
           <div
             class="relative z-10 h-full flex flex-col items-center justify-between text-center px-6 py-10"
           >
             <div class="mt-4"></div>
-
             <div class="flex flex-col w-full px-4" style="margin-top: -8vh">
               <h1
                 class="name-script font-script text-[var(--ivory)] leading-none self-start text-left"
@@ -422,13 +405,11 @@ body::-webkit-scrollbar,
                 Allya
               </h1>
             </div>
-
             <div class="guest-block font-serif text-[var(--ivory)] mb-6">
               <p class="text-sm text-[var(--ivory-dim)]">Kepada Yth.</p>
               <p id="guest-name" class="text-lg italic mt-1">
                 Bapak/Ibu/Saudara/i
               </p>
-
               <button
                 id="open-btn"
                 class="cta-btn mt-6 flex items-center gap-2 mx-auto bg-[var(--wine)] hover:bg-[var(--wine-light)] text-[var(--ivory)] font-serif italic text-base px-6 py-3 rounded-r-full rounded-tl-full shadow-lg transition-colors"
@@ -452,11 +433,10 @@ body::-webkit-scrollbar,
           </div>
         </section>
 
-        <!-- placeholder bagian berikutnya, akan dibangun di tahap selanjutnya -->
         <section
           id="next-section"
           class="hidden absolute top-0 left-0 w-full overflow-hidden"
-          style="height: 100svh"
+          style="height: 100vh; height: 100svh"
         >
           <div
             class="absolute inset-0"
@@ -477,7 +457,6 @@ body::-webkit-scrollbar,
               );
             "
           ></div>
-
           <div
             class="relative z-10 h-full flex flex-col items-center justify-end text-center px-6 pb-40"
           >
@@ -508,20 +487,29 @@ body::-webkit-scrollbar,
               </div>
             </div>
           </div>
-
-          <!-- ganti src di bawah dengan file musik kamu -->
-          <audio id="bg-audio" src="music/Bernaung .mpeg" loop preload="auto"></audio>
         </section>
 
-        <!-- Tombol QR & musik: mengambang menempel kanan-bawah di SEMUA section, muncul setelah undangan dibuka -->
         <div
           id="floating-fab"
-          class="hidden"
-          style="position: sticky; bottom: 0; height: 0; z-index: 30"
+          style="
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            z-index: 30;
+            pointer-events: none;
+          "
         >
           <div
-            class="absolute right-5 flex flex-col gap-3"
-            style="bottom: 24px"
+            style="
+              position: absolute;
+              right: 20px;
+              bottom: 24px;
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+            "
           >
             <button
               id="qr-btn"
@@ -545,7 +533,7 @@ body::-webkit-scrollbar,
             </button>
             <button
               id="music-btn"
-              class="w-11 h-11 rounded-full flex items-center justify-center shadow-lg"
+              class="playing w-11 h-11 rounded-full flex items-center justify-center shadow-lg"
               style="background: rgba(246, 241, 231, 0.92)"
             >
               <svg
@@ -570,7 +558,6 @@ body::-webkit-scrollbar,
           id="section3"
           class="relative bg-[var(--ivory)] px-6 py-20 text-center"
         >
-          <!-- D | M -->
           <div class="flex items-center justify-center gap-5 mb-14">
             <span
               id="dm-d"
@@ -586,8 +573,6 @@ body::-webkit-scrollbar,
               >A</span
             >
           </div>
-
-          <!-- QS. Ar-Rum -->
           <div id="ayat-block" class="ayat-reveal max-w-md mx-auto">
             <p class="font-serif italic text-[#666] mb-4">QS. Ar-Rum Ayat 21</p>
             <p
@@ -607,8 +592,6 @@ body::-webkit-scrollbar,
               berpikir.
             </p>
           </div>
-
-          <!-- garis + daun -->
           <div
             id="divider-leaf"
             class="pop-reveal flex items-center justify-center gap-3 my-10"
@@ -619,8 +602,6 @@ body::-webkit-scrollbar,
             </svg>
             <span class="h-px w-16" style="background: #333"></span>
           </div>
-
-          <!-- Bride & Groom -->
           <div id="bride-groom-heading" class="pop-reveal">
             <h2
               class="font-serif font-bold"
@@ -632,8 +613,6 @@ body::-webkit-scrollbar,
               &amp; Groom
             </p>
           </div>
-
-          <!-- Salam pembuka -->
           <div
             id="greeting-block"
             class="reveal-up-scroll max-w-md mx-auto mt-8 font-serif text-[#555] leading-relaxed"
@@ -645,8 +624,6 @@ body::-webkit-scrollbar,
               pernikahan kami
             </p>
           </div>
-
-          <!-- Foto mempelai pria -->
           <div
             id="groom-photo"
             class="zoom-out-reveal mx-auto mt-10"
@@ -676,8 +653,6 @@ body::-webkit-scrollbar,
               />
             </div>
           </div>
-
-          <!-- Nama & info mempelai pria: animasi dari atas ke bawah -->
           <div id="groom-info" class="ayat-reveal mt-6">
             <h3
               class="font-serif font-bold"
@@ -708,8 +683,6 @@ body::-webkit-scrollbar,
               fir22ly
             </a>
           </div>
-
-          <!-- garis & : statis, tanpa animasi -->
           <div class="flex items-center justify-center gap-3 my-10">
             <span class="h-px w-16" style="background: #333"></span>
             <span class="font-script" style="font-size: 2.2rem; color: #2f3b2f"
@@ -717,8 +690,6 @@ body::-webkit-scrollbar,
             >
             <span class="h-px w-16" style="background: #333"></span>
           </div>
-
-          <!-- Foto + nama + info mempelai wanita: semua animasi zoom-out bareng -->
           <div id="bride-block" class="zoom-out-reveal">
             <div
               class="mx-auto"
@@ -782,7 +753,7 @@ body::-webkit-scrollbar,
         <section
           id="section-savedate"
           class="relative overflow-hidden px-6 py-24 text-center"
-          style="min-height: 100svh"
+          style="min-height: 100vh; min-height: 100svh"
         >
           <div
             class="absolute inset-0"
@@ -802,9 +773,7 @@ body::-webkit-scrollbar,
               );
             "
           ></div>
-
           <div class="relative z-10">
-            <!-- "Save The Date": muncul (fade) -->
             <h2
               id="std-title"
               class="pop-reveal font-serif font-bold"
@@ -812,8 +781,6 @@ body::-webkit-scrollbar,
             >
               Save The Date
             </h2>
-
-            <!-- Garis + daun: dari bawah ke atas -->
             <div
               id="std-divider"
               class="reveal-up-scroll flex items-center justify-center gap-3 my-8"
@@ -829,8 +796,6 @@ body::-webkit-scrollbar,
               </svg>
               <span class="h-px w-16" style="background: var(--ivory)"></span>
             </div>
-
-            <!-- Teks: dari atas ke bawah -->
             <p
               id="std-text"
               class="ayat-reveal font-serif text-[var(--ivory)] max-w-md mx-auto leading-relaxed"
@@ -839,8 +804,6 @@ body::-webkit-scrollbar,
               Bapak/Ibu/Saudara/i dalam acara pernikahan kami yang akan
               diselenggarakan pada :
             </p>
-
-            <!-- Countdown: TIDAK ada animasi -->
             <div class="flex items-center justify-center gap-3 mt-10">
               <div
                 class="rounded-xl px-4 py-3"
@@ -895,8 +858,6 @@ body::-webkit-scrollbar,
                 <div class="font-serif text-[var(--ivory)] text-sm">Detik</div>
               </div>
             </div>
-
-            <!-- Tombol: dari bawah ke atas -->
             <button
               id="save-calendar-btn"
               class="reveal-up-scroll mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full font-serif"
@@ -927,7 +888,6 @@ body::-webkit-scrollbar,
           id="section-acara"
           class="relative bg-[var(--ivory)] px-6 py-20 text-center"
         >
-          <!-- Akad Nikah: tanpa animasi, hanya tombol Maps yang pop-reveal -->
           <div class="mb-16">
             <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
               Resepsi
@@ -979,117 +939,12 @@ body::-webkit-scrollbar,
               Google Maps
             </a>
           </div>
-
-          <!-- Resepsi: tanpa animasi, hanya tombol Maps yang pop-reveal -->
-          <!-- <div class="mb-16">
-            <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
-              Resepsi
-            </h2>
-            <div
-              class="mx-auto my-4"
-              style="width: 1px; height: 32px; background: #333"
-            ></div>
-            <p
-              class="font-serif font-bold"
-              style="font-size: 1.4rem; color: #222"
-            >
-              Jum'at
-            </p>
-            <p
-              class="font-serif font-bold"
-              style="font-size: 1.5rem; color: #222"
-            >
-              Jum'at, 16 Oktober 2026
-            </p>
-            <p class="font-serif text-[#555] mt-1">09.00 WIB - Selesai</p>
-            <div
-              class="mx-auto my-4"
-              style="width: 1px; height: 32px; background: #333"
-            ></div>
-            <p class="font-serif font-bold" style="color: #222">
-              Kantor Desa Bojongkunci
-            </p>
-            <p class="font-serif text-[#666] text-sm mt-1 leading-relaxed">
-              Jl. Desa Bojong Kunci, Bojong Kunci, Kec. Pameungpeuk, Kabupaten Bandung, Jawa Barat
-            </p>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=Jl.+Karet+Pasar+Baru+Barat+V+No.92+Jakarta"
-              target="_blank"
-              class="reveal-up-scroll inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-full font-serif"
-              style="background: var(--wine); color: var(--ivory)"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="var(--ivory)"
-              >
-                <path
-                  d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
-                />
-              </svg>
-              Google Maps
-            </a>
-          </div> -->
-
-          <!-- Ngunduh Mantu: tanpa animasi, hanya tombol Maps yang pop-reveal -->
-          <!-- <div>
-            <h2 class="font-serif" style="font-size: 2.2rem; color: #222">
-              Ngunduh Mantu
-            </h2>
-            <div
-              class="mx-auto my-4"
-              style="width: 1px; height: 32px; background: #333"
-            ></div>
-            <p
-              class="font-serif font-bold"
-              style="font-size: 1.4rem; color: #222"
-            >
-              Kamis
-            </p>
-            <p
-              class="font-serif font-bold"
-              style="font-size: 1.5rem; color: #222"
-            >
-              Kamis, 22 April 2027
-            </p>
-            <p class="font-serif text-[#555] mt-1">10.00 WIB</p>
-            <div
-              class="mx-auto my-4"
-              style="width: 1px; height: 32px; background: #333"
-            ></div>
-            <p class="font-serif font-bold" style="color: #222">
-              Kediaman Mempelai Pria
-            </p>
-            <p class="font-serif text-[#666] text-sm mt-1 leading-relaxed">
-              Jl. KH Moh Mussa
-            </p> -->
-          <!-- <a
-              href="https://www.google.com/maps/search/?api=1&query=Jl.+KH+Moh+Mussa"
-              target="_blank"
-              class="reveal-up-scroll inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-full font-serif"
-              style="background: var(--wine); color: var(--ivory)"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="var(--ivory)"
-              >
-                <path
-                  d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
-                />
-              </svg>
-              Google Maps
-            </a>
-          </div> -->
         </section>
 
         <section
           id="section-gallery"
           class="relative bg-[var(--ivory)] px-6 py-20 text-center"
         >
-          <!-- Judul: dari bawah ke atas -->
           <h2
             id="gallery-title"
             class="reveal-up-scroll font-serif font-bold"
@@ -1097,8 +952,6 @@ body::-webkit-scrollbar,
           >
             Gallery
           </h2>
-
-          <!-- Grid foto: muncul satu-satu, cepat, saat discroll -->
           <div class="grid grid-cols-3 gap-2 mt-10">
             <img
               src="assets/foto 1.jpeg"
@@ -1161,7 +1014,6 @@ body::-webkit-scrollbar,
           id="section-lovestory"
           class="relative bg-[var(--ivory)] px-6 py-20 overflow-hidden"
         >
-          <!-- Judul: animasi dari kecil menjadi lebar -->
           <h2
             id="lovestory-title"
             class="title-expand font-serif font-bold text-center"
@@ -1169,9 +1021,7 @@ body::-webkit-scrollbar,
           >
             Love Story
           </h2>
-
           <div class="relative mt-14" style="padding-left: 56px">
-            <!-- garis timeline di sisi kiri -->
             <div
               class="absolute"
               style="
@@ -1182,8 +1032,6 @@ body::-webkit-scrollbar,
                 background: #999;
               "
             ></div>
-
-            <!-- Item 1 -->
             <div class="text-left mb-14">
               <div
                 class="overflow-hidden mb-4"
@@ -1201,7 +1049,6 @@ body::-webkit-scrollbar,
               >
                 Awal Pertemuan
               </h3>
-              <!-- <p class="font-serif text-[#666] mt-1">4 Februari 2019</p> -->
               <p
                 class="font-serif text-[#555] mt-3 leading-relaxed"
                 style="max-width: 280px"
@@ -1223,8 +1070,6 @@ body::-webkit-scrollbar,
                 <span class="h-px flex-1" style="background: #333"></span>
               </div>
             </div>
-
-            <!-- Item 2 -->
             <div class="text-left mb-14">
               <div
                 class="overflow-hidden mb-4"
@@ -1242,7 +1087,6 @@ body::-webkit-scrollbar,
               >
                 Langkah Pertama
               </h3>
-              <!-- <p class="font-serif text-[#666] mt-1">10 Maret 2019</p> -->
               <p
                 class="font-serif text-[#555] mt-3 leading-relaxed"
                 style="max-width: 280px"
@@ -1263,8 +1107,6 @@ body::-webkit-scrollbar,
                 <span class="h-px flex-1" style="background: #333"></span>
               </div>
             </div>
-
-            <!-- Item 3 -->
             <div class="text-left mb-14">
               <div
                 class="overflow-hidden mb-4"
@@ -1282,7 +1124,6 @@ body::-webkit-scrollbar,
               >
                 Semakin Dekat
               </h3>
-              <!-- <p class="font-serif text-[#666] mt-1">2 Juni 2020</p> -->
               <p
                 class="font-serif text-[#555] mt-3 leading-relaxed"
                 style="max-width: 280px"
@@ -1303,8 +1144,6 @@ body::-webkit-scrollbar,
                 <span class="h-px flex-1" style="background: #333"></span>
               </div>
             </div>
-
-            <!-- Item 4 -->
             <div class="text-left">
               <div
                 class="overflow-hidden mb-4"
@@ -1322,7 +1161,6 @@ body::-webkit-scrollbar,
               >
                 Menuju Pelaminan
               </h3>
-              <!-- <p class="font-serif text-[#666] mt-1">15 Januari 2027</p> -->
               <p
                 class="font-serif text-[#555] mt-3 leading-relaxed"
                 style="max-width: 280px"
@@ -1339,7 +1177,7 @@ body::-webkit-scrollbar,
         <section
           id="section-gift"
           class="relative overflow-hidden px-6 py-24 text-center"
-          style="min-height: 100svh"
+          style="min-height: 100vh; min-height: 100svh"
         >
           <div
             class="absolute inset-0"
@@ -1349,12 +1187,10 @@ body::-webkit-scrollbar,
               background-position: center;
             "
           ></div>
-          <!-- overlay lebih terang / opacity dikurangi dibanding section lain -->
           <div
             class="absolute inset-0"
             style="background: rgba(20, 20, 15, 0.5)"
           ></div>
-
           <div class="relative z-10">
             <h2
               class="font-serif"
@@ -1396,8 +1232,6 @@ body::-webkit-scrollbar,
               Hadiah Digital
             </button>
           </div>
-
-          <!-- Daftar rekening: tersembunyi dulu, muncul saat tombol "Hadiah Digital" diklik -->
           <div
             id="gift-cards-wrap"
             class="hidden relative z-10 mt-8"
@@ -1408,7 +1242,6 @@ body::-webkit-scrollbar,
               align-items: center;
             "
           >
-            <!-- Kartu 1: contoh BCA -->
             <div
               class="rounded-2xl p-5 text-left"
               style="
@@ -1467,8 +1300,6 @@ body::-webkit-scrollbar,
                 <span class="text-xs text-[#999]">Event</span>
               </div>
             </div>
-
-            <!-- Kartu 2: rekening lain, logo placeholder -->
             <div
               class="rounded-2xl p-5 text-left"
               style="
@@ -1479,7 +1310,11 @@ body::-webkit-scrollbar,
             >
               <div class="flex items-center justify-between">
                 <span class="font-serif text-lg text-[#333]">Gift Card</span>
-                <span class="text-sm text-[#999]">🖼️ Mandiri</span>
+                <span
+                  class="font-bold text-xl"
+                  style="color: #003d79; letter-spacing: 0.5px"
+                  >mandiri</span
+                >
               </div>
               <svg
                 width="28"
@@ -1531,7 +1366,7 @@ body::-webkit-scrollbar,
         <section
           id="section-rsvp"
           class="relative overflow-hidden px-6 py-24"
-          style="min-height: 100svh"
+          style="min-height: 100vh; min-height: 100svh"
         >
           <div
             class="absolute inset-0"
@@ -1545,9 +1380,7 @@ body::-webkit-scrollbar,
             class="absolute inset-0"
             style="background: rgba(15, 15, 12, 0.55)"
           ></div>
-
           <div class="relative z-10 text-center">
-            <!-- Judul: animasi dari kecil ke besar -->
             <h2
               id="rsvp-title"
               class="title-expand font-serif font-bold"
@@ -1556,8 +1389,6 @@ body::-webkit-scrollbar,
               Ucapan &amp; Doa
             </h2>
           </div>
-
-          <!-- Card luar (putih, sedikit transparan) -->
           <div
             class="relative z-10 mt-8 mx-auto rounded-3xl p-6"
             style="max-width: 400px; background: rgba(255, 255, 255, 0.95)"
@@ -1567,8 +1398,6 @@ body::-webkit-scrollbar,
             >
               Berikan ucapan harapan dan do'a<br />kepada kedua mempelai
             </p>
-
-            <!-- Card dalam (biru muda): form -->
             <div class="rounded-2xl mt-8 p-6" style="background: #eef2f7">
               <h3
                 class="font-serif font-bold text-center"
@@ -1576,7 +1405,6 @@ body::-webkit-scrollbar,
               >
                 Kirim Ucapan &amp;<br />Konfirmasi Kehadiran
               </h3>
-
               <label
                 class="block font-serif font-bold mt-6 mb-2"
                 style="color: #1c2a3a"
@@ -1593,7 +1421,6 @@ body::-webkit-scrollbar,
                   box-sizing: border-box;
                 "
               />
-
               <label
                 class="block font-serif font-bold mt-6 mb-2"
                 style="color: #1c2a3a"
@@ -1642,7 +1469,6 @@ body::-webkit-scrollbar,
                   </button>
                 </div>
               </div>
-
               <label
                 class="block font-serif font-bold mt-6 mb-2"
                 style="color: #1c2a3a"
@@ -1659,7 +1485,6 @@ body::-webkit-scrollbar,
                   box-sizing: border-box;
                 "
               ></textarea>
-
               <button
                 id="rsvp-submit-btn"
                 class="w-full mt-6 py-3 rounded-xl font-serif font-bold"
@@ -1673,8 +1498,6 @@ body::-webkit-scrollbar,
                 Kirim
               </button>
             </div>
-
-            <!-- Riwayat ucapan: terisi otomatis setelah kirim -->
             <div
               id="rsvp-history"
               class="mt-8"
@@ -1691,7 +1514,7 @@ body::-webkit-scrollbar,
         <section
           id="section-closing"
           class="relative overflow-hidden px-6 pt-24 pb-12 text-center"
-          style="min-height: 100svh"
+          style="min-height: 100vh; min-height: 100svh"
         >
           <div
             class="absolute inset-0"
@@ -1701,7 +1524,6 @@ body::-webkit-scrollbar,
               background-position: center;
             "
           ></div>
-          <!-- Gradien 2 warna: wine di atas menuju coklat gelap di bawah -->
           <div
             class="absolute inset-0"
             style="
@@ -1712,7 +1534,6 @@ body::-webkit-scrollbar,
               );
             "
           ></div>
-
           <div
             class="relative z-10"
             style="
@@ -1723,7 +1544,6 @@ body::-webkit-scrollbar,
             "
           >
             <div>
-              <!-- Garis + diamond: animasi dari kecil ke besar -->
               <div
                 class="zoom-in-reveal flex items-center justify-center gap-3 mb-10"
               >
@@ -1740,8 +1560,6 @@ body::-webkit-scrollbar,
                 </svg>
                 <span class="h-px w-16" style="background: var(--ivory)"></span>
               </div>
-
-              <!-- Foto: animasi dari kecil ke besar -->
               <div
                 class="zoom-in-reveal mx-auto"
                 style="
@@ -1766,12 +1584,10 @@ body::-webkit-scrollbar,
                   <img
                     src="assets/foto 7.jpeg"
                     class="w-full h-full object-cover"
-                    alt="Dilan & Millea"
+                    alt="Firli & Allya"
                   />
                 </div>
               </div>
-
-              <!-- Teks penutup: dari bawah ke atas -->
               <div
                 class="reveal-up-scroll mt-10 font-serif text-[var(--ivory)] leading-relaxed"
               >
@@ -1785,25 +1601,47 @@ body::-webkit-scrollbar,
                 </p>
               </div>
             </div>
-
-            <!-- Footer promosi: opsional, hapus/ganti sesuai kebutuhan. Masih di dalam section yang sama -->
             <div
               class="mt-16 pt-5"
               style="border-top: 1px solid rgba(255, 255, 255, 0.25)"
             >
-              <p
-                class="font-serif"
+              <a
+                href="https://www.instagram.com/yudwalldnn"
+                target="_blank"
+                rel="noopener"
+                class="font-serif inline-flex items-center justify-center gap-1.5"
                 style="
                   font-size: 0.75rem;
                   color: rgba(255, 255, 255, 0.65);
                   letter-spacing: 0.5px;
+                  text-decoration: none;
+                  flex-wrap: wrap;
+                  row-gap: 4px;
                 "
               >
-                Undangan digital ini dibuat dengan ♥ oleh
+                <span>Undangan digital ini dibuat dengan ♥ oleh</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--ivory)"
+                  stroke-width="2"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle
+                    cx="17.5"
+                    cy="6.5"
+                    r="1.2"
+                    fill="var(--ivory)"
+                    stroke="none"
+                  />
+                </svg>
                 <span style="color: var(--ivory); font-weight: 600"
                   >@yudwalldnn</span
                 >
-              </p>
+              </a>
             </div>
           </div>
         </section>
@@ -1811,201 +1649,236 @@ body::-webkit-scrollbar,
     </div>
 
     <script>
-      // ---- Foto carousel: ganti slide setiap 4.5 detik ----
-const slides = document.querySelectorAll(".bg-slide");
-let current = 0;
-setInterval(() => {
-  slides[current].classList.remove("active");
-  current = (current + 1) % slides.length;
-  slides[current].classList.add("active");
-}, 4500);
+      const slides = document.querySelectorAll(".bg-slide");
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove("active");
+        current = (current + 1) % slides.length;
+        slides[current].classList.add("active");
+      }, 4500);
 
-// ---- Ganti nama tamu lewat parameter URL, misal ?tamu=Budi ----
-const params = new URLSearchParams(window.location.search);
-const tamu = params.get("tamu");
-if (tamu) {
-  document.getElementById("guest-name").textContent = decodeURIComponent(tamu);
-}
+      const params = new URLSearchParams(window.location.search);
+      const tamu = params.get("tamu");
+      if (tamu) {
+        document.getElementById("guest-name").textContent =
+          decodeURIComponent(tamu);
+      }
 
-// ---- Tombol "Buka Undangan" ----
-const cover = document.getElementById("cover");
-const openBtn = document.getElementById("open-btn");
-cover.classList.add("opening");
+      const cover = document.getElementById("cover");
+      const openBtn = document.getElementById("open-btn");
+      cover.classList.add("opening");
 
-openBtn.addEventListener("click", () => {
-  cover.classList.add("hide");
-  document.body.classList.remove("pre-open");
-  document.getElementById("next-section").classList.remove("hidden");
-  document.getElementById("floating-fab").classList.remove("hidden");
-  setTimeout(() => {
-    document.getElementById("section2-text").classList.add("show");
-  }, 300);
-  setTimeout(checkRevealOnScroll, 500);
-});
+      // ---- Audio ----
+      // Aturan browser: suara TIDAK boleh menyala sebelum ada sentuhan/klik pertama dari user.
+      // Jadi: coba autoplay bersuara dulu (jalan di sebagian browser). Kalau diblokir, sentuhan pertama
+      // di MANA SAJA pada cover langsung menyalakan lagu. Ikon berputar hanya kalau suara benar-benar menyala.
+      const audio = document.getElementById("bg-audio");
+      const musicBtn = document.getElementById("music-btn");
+      let userPaused = false;
 
-// ---- Tombol musik: play/pause ----
-const musicBtn = document.getElementById("music-btn");
-const audio = document.getElementById("bg-audio");
-let isPlaying = false;
-musicBtn.addEventListener("click", () => {
-  if (isPlaying) {
-    audio.pause();
-  } else {
-    audio.play().catch(() => {});
-  }
-  isPlaying = !isPlaying;
-  musicBtn.classList.toggle("playing", isPlaying);
-});
+      function syncMusicIcon() {
+        const audible = !audio.paused && !audio.muted;
+        musicBtn.classList.toggle("playing", audible);
+      }
+      audio.addEventListener("play", syncMusicIcon);
+      audio.addEventListener("pause", syncMusicIcon);
+      audio.addEventListener("volumechange", syncMusicIcon);
 
-// ---- Section 3+: animasi muncul/reset tiap kali elemen masuk-keluar layar (bisa replay, dua arah) ----
-function checkRevealOnScroll() {
-  document
-    .querySelectorAll(
-      ".dm-letter, .ayat-reveal, .pop-reveal, .reveal-up-scroll, .zoom-out-reveal, .title-expand, .zoom-in-reveal, .gallery-reveal",
-    )
-    .forEach((el) => {
-      const rect = el.getBoundingClientRect();
-      const isVisible = rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
-      el.classList.toggle("in-view", isVisible);
-    });
-}
-window.addEventListener("scroll", checkRevealOnScroll, { passive: true });
-window.addEventListener("resize", checkRevealOnScroll);
-document
-  .querySelector(".invite-frame")
-  .addEventListener("scroll", checkRevealOnScroll, { passive: true });
-checkRevealOnScroll();
+      function startMusic() {
+        audio.muted = false;
+        const p = audio.play();
+        if (p && p.catch) p.catch(() => {});
+        syncMusicIcon();
+      }
 
-// ---- Countdown Save The Date ----
-// GANTI tanggal & jam acara di bawah ini sesuai kebutuhan
-const weddingDate = new Date("2026-10-16T09:00:00+07:00");
+      // 1) Coba langsung bersuara (sebagian browser mengizinkan)
+      audio.muted = false;
+      audio
+        .play()
+        .then(syncMusicIcon)
+        .catch(() => {
+          // 2) Diblokir -> jalan senyap dulu, lalu tunggu sentuhan pertama
+          audio.muted = true;
+          audio.play().catch(() => {});
+          syncMusicIcon();
+        });
 
-function updateCountdown() {
-  const now = new Date();
-  let diff = weddingDate - now;
-  if (diff < 0) diff = 0;
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-  document.getElementById("cd-days").textContent = String(days).padStart(
-    2,
-    "0",
-  );
-  document.getElementById("cd-hours").textContent = String(hours).padStart(
-    2,
-    "0",
-  );
-  document.getElementById("cd-minutes").textContent = String(minutes).padStart(
-    2,
-    "0",
-  );
-  document.getElementById("cd-seconds").textContent = String(seconds).padStart(
-    2,
-    "0",
-  );
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
+      // Sentuhan/klik pertama di mana saja -> nyalakan suara
+      const unlockEvents = ["pointerup", "click", "touchend", "keydown"];
+      function unlockAudio(e) {
+        if (e.target && e.target.closest && e.target.closest("#music-btn"))
+          return; // biar tombol musik yang menangani
+        if (!userPaused) startMusic();
+        removeUnlock();
+      }
+      function removeUnlock() {
+        unlockEvents.forEach((ev) =>
+          document.removeEventListener(ev, unlockAudio, true),
+        );
+      }
+      unlockEvents.forEach((ev) =>
+        document.addEventListener(ev, unlockAudio, true),
+      );
 
-// ---- Tombol "Simpan di Kalender": buka Google Calendar terisi otomatis ----
-document.getElementById("save-calendar-btn").addEventListener("click", () => {
-  // GANTI judul, deskripsi, lokasi, dan waktu (format UTC: YYYYMMDDTHHmmssZ) di bawah ini
-  const title = encodeURIComponent("Pernikahan Dilan & Millea");
-  const details = encodeURIComponent(
-    "Dengan segala kerendahan hati kami mengundang Bapak/Ibu/Saudara/i.",
-  );
-  const location = encodeURIComponent("Nama Gedung, Alamat Lengkap");
-  const start = "20270320T010000Z";
-  const end = "20270320T040000Z";
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
-  window.open(url, "_blank");
-});
-
-// ---- Tombol "Hadiah Digital": tampilkan/sembunyikan daftar rekening ----
-document.getElementById("gift-toggle-btn").addEventListener("click", () => {
-  document.getElementById("gift-cards-wrap").classList.toggle("hidden");
-});
-
-// ---- Tombol "Copy": salin nomor rekening ----
-document.querySelectorAll(".copy-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const target = document.getElementById(btn.dataset.target);
-    const label = btn.querySelector(".copy-label");
-    navigator.clipboard
-      .writeText(target.textContent.trim())
-      .then(() => {
-        const original = label.textContent;
-        label.textContent = "Tersalin!";
+      openBtn.addEventListener("click", () => {
+        cover.classList.add("hide");
+        document.body.classList.remove("pre-open");
+        document.getElementById("next-section").classList.remove("hidden");
         setTimeout(() => {
-          label.textContent = original;
-        }, 1500);
-      })
-      .catch(() => {});
-  });
-});
+          document.getElementById("section2-text").classList.add("show");
+        }, 300);
+        setTimeout(checkRevealOnScroll, 500);
+        if (!userPaused) startMusic(); // gesture asli -> lagu bersuara, lanjut (tidak diulang dari awal)
+      });
 
-// ---- RSVP: pilih status kehadiran (single-select) ----
-let selectedStatus = null;
-document.querySelectorAll(".rsvp-status-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".rsvp-status-btn").forEach((b) => {
-      b.style.background = "transparent";
-      b.style.color = "#1c2a3a";
-    });
-    btn.style.background = "var(--wine)";
-    btn.style.color = "var(--ivory)";
-    selectedStatus = btn.dataset.status;
-  });
-});
+      // ---- Tombol musik: nyala/mati manual. Kalau masih senyap -> nyalakan suara, bukan pause ----
+      musicBtn.addEventListener("click", () => {
+        removeUnlock();
+        const audible = !audio.paused && !audio.muted;
+        if (audible) {
+          userPaused = true;
+          audio.pause();
+        } else {
+          userPaused = false;
+          startMusic();
+        }
+        syncMusicIcon();
+      });
 
-// ---- RSVP: riwayat ucapan ----
-// CATATAN PENTING: ucapan disimpan di localStorage BROWSER INI SAJA, bukan database bersama.
-// Artinya tiap tamu hanya akan melihat ucapannya sendiri di perangkatnya, bukan ucapan tamu lain.
-// Untuk ucapan yang bisa dilihat semua tamu, perlu backend/database (mis. Google Sheets API, Firebase, dll) — beri tahu saya kalau mau dibuatkan.
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-// ---- Format waktu relatif: Hari ini / Kemarin / X hari lalu / X Minggu lalu / X Bulan lalu / X Tahun lalu ----
-function formatRelativeTime(timestamp) {
-  if (!timestamp) return "";
-  const now = new Date();
-  const then = new Date(timestamp);
-  const startOfDay = (d) =>
-    new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const dayDiff = Math.round(
-    (startOfDay(now) - startOfDay(then)) / (1000 * 60 * 60 * 24),
-  );
+      function checkRevealOnScroll() {
+        document
+          .querySelectorAll(
+            ".dm-letter, .ayat-reveal, .pop-reveal, .reveal-up-scroll, .zoom-out-reveal, .title-expand, .zoom-in-reveal, .gallery-reveal",
+          )
+          .forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const isVisible =
+              rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+            el.classList.toggle("in-view", isVisible);
+          });
+      }
+      window.addEventListener("scroll", checkRevealOnScroll, { passive: true });
+      window.addEventListener("resize", checkRevealOnScroll);
+      document
+        .querySelector(".invite-frame")
+        .addEventListener("scroll", checkRevealOnScroll, { passive: true });
+      checkRevealOnScroll();
 
-  if (dayDiff <= 0) return "Hari ini";
-  if (dayDiff === 1) return "Kemarin";
-  if (dayDiff < 7) return dayDiff + " hari lalu";
-  const weekDiff = Math.floor(dayDiff / 7);
-  if (weekDiff < 5)
-    return weekDiff + (weekDiff === 1 ? " Minggu lalu" : " Minggu lalu");
-  const monthDiff = Math.floor(dayDiff / 30);
-  if (monthDiff < 12)
-    return monthDiff + (monthDiff === 1 ? " Bulan lalu" : " Bulan lalu");
-  const yearDiff = Math.floor(dayDiff / 365);
-  return yearDiff + (yearDiff === 1 ? " Tahun lalu" : " Tahun lalu");
-}
-function loadRsvpHistory() {
-  try {
-    return JSON.parse(localStorage.getItem("rsvp-history") || "[]");
-  } catch (e) {
-    return [];
-  }
-}
-function renderRsvpHistory() {
-  const list = loadRsvpHistory();
-  const wrap = document.getElementById("rsvp-history");
-  wrap.innerHTML = list
-    .slice()
-    .reverse()
-    .map(
-      (item) => `
+      const weddingDate = new Date("2026-10-16T09:00:00+07:00");
+      function updateCountdown() {
+        const now = new Date();
+        let diff = weddingDate - now;
+        if (diff < 0) diff = 0;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+        document.getElementById("cd-days").textContent = String(days).padStart(
+          2,
+          "0",
+        );
+        document.getElementById("cd-hours").textContent = String(
+          hours,
+        ).padStart(2, "0");
+        document.getElementById("cd-minutes").textContent = String(
+          minutes,
+        ).padStart(2, "0");
+        document.getElementById("cd-seconds").textContent = String(
+          seconds,
+        ).padStart(2, "0");
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      document
+        .getElementById("save-calendar-btn")
+        .addEventListener("click", () => {
+          const title = encodeURIComponent("Pernikahan Firli & Allya");
+          const details = encodeURIComponent(
+            "Dengan segala kerendahan hati kami mengundang Bapak/Ibu/Saudara/i.",
+          );
+          const location = encodeURIComponent("Kantor Desa Bojongkunci");
+          const start = "20261016T020000Z";
+          const end = "20261016T050000Z";
+          const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+          window.open(url, "_blank");
+        });
+
+      document
+        .getElementById("gift-toggle-btn")
+        .addEventListener("click", () => {
+          document.getElementById("gift-cards-wrap").classList.toggle("hidden");
+        });
+
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = document.getElementById(btn.dataset.target);
+          const label = btn.querySelector(".copy-label");
+          navigator.clipboard
+            .writeText(target.textContent.trim())
+            .then(() => {
+              const original = label.textContent;
+              label.textContent = "Tersalin!";
+              setTimeout(() => {
+                label.textContent = original;
+              }, 1500);
+            })
+            .catch(() => {});
+        });
+      });
+
+      let selectedStatus = null;
+      document.querySelectorAll(".rsvp-status-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".rsvp-status-btn").forEach((b) => {
+            b.style.background = "transparent";
+            b.style.color = "#1c2a3a";
+          });
+          btn.style.background = "var(--wine)";
+          btn.style.color = "var(--ivory)";
+          selectedStatus = btn.dataset.status;
+        });
+      });
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+      function formatRelativeTime(timestamp) {
+        if (!timestamp) return "";
+        const now = new Date();
+        const then = new Date(timestamp);
+        const startOfDay = (d) =>
+          new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const dayDiff = Math.round(
+          (startOfDay(now) - startOfDay(then)) / (1000 * 60 * 60 * 24),
+        );
+        if (dayDiff <= 0) return "Hari ini";
+        if (dayDiff === 1) return "Kemarin";
+        if (dayDiff < 7) return dayDiff + " hari lalu";
+        const weekDiff = Math.floor(dayDiff / 7);
+        if (weekDiff < 5) return weekDiff + " Minggu lalu";
+        const monthDiff = Math.floor(dayDiff / 30);
+        if (monthDiff < 12) return monthDiff + " Bulan lalu";
+        const yearDiff = Math.floor(dayDiff / 365);
+        return yearDiff + " Tahun lalu";
+      }
+      function loadRsvpHistory() {
+        try {
+          return JSON.parse(localStorage.getItem("rsvp-history") || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function renderRsvpHistory() {
+        const list = loadRsvpHistory();
+        const wrap = document.getElementById("rsvp-history");
+        wrap.innerHTML = list
+          .slice()
+          .reverse()
+          .map(
+            (item) => `
       <div class="rounded-xl p-4" style="background:#f4f4f2; border:1px solid #e5e5e5;">
         <div class="flex items-center justify-between">
           <span class="font-serif font-bold" style="color:#1c2a3a;">${escapeHtml(item.name)}</span>
@@ -2015,33 +1888,34 @@ function renderRsvpHistory() {
         <p class="font-serif text-xs mt-2" style="color:#999;">${escapeHtml(formatRelativeTime(item.time))}</p>
       </div>
     `,
-    )
-    .join("");
-}
-renderRsvpHistory();
+          )
+          .join("");
+      }
+      renderRsvpHistory();
 
-document.getElementById("rsvp-submit-btn").addEventListener("click", () => {
-  const nameInput = document.getElementById("rsvp-name");
-  const msgInput = document.getElementById("rsvp-message");
-  const name = nameInput.value.trim();
-  const message = msgInput.value.trim();
-  if (!name || !selectedStatus) {
-    alert("Isi nama dan pilih konfirmasi kehadiran dulu ya.");
-    return;
-  }
-  const list = loadRsvpHistory();
-  list.push({
-    name,
-    status: selectedStatus,
-    message: message || "-",
-    time: Date.now(),
-  });
-  localStorage.setItem("rsvp-history", JSON.stringify(list));
-  nameInput.value = "";
-  msgInput.value = "";
-  renderRsvpHistory();
-});
-
+      document
+        .getElementById("rsvp-submit-btn")
+        .addEventListener("click", () => {
+          const nameInput = document.getElementById("rsvp-name");
+          const msgInput = document.getElementById("rsvp-message");
+          const name = nameInput.value.trim();
+          const message = msgInput.value.trim();
+          if (!name || !selectedStatus) {
+            alert("Isi nama dan pilih konfirmasi kehadiran dulu ya.");
+            return;
+          }
+          const list = loadRsvpHistory();
+          list.push({
+            name,
+            status: selectedStatus,
+            message: message || "-",
+            time: Date.now(),
+          });
+          localStorage.setItem("rsvp-history", JSON.stringify(list));
+          nameInput.value = "";
+          msgInput.value = "";
+          renderRsvpHistory();
+        });
     </script>
   </body>
 </html>
